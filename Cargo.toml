@@ -1,0 +1,16 @@
+[package]
+
+name = "linuxdvb"
+version = "0.0.1"
+authors = ["Ilkka Rauta <ilkka.rauta@gmail.com>"]
+
+build = "codegen/properties/generate-properties.rs"
+
+[dependencies]
+
+libc = "*"
+errno = "*"
+
+[build-dependencies]
+
+case = "*"
