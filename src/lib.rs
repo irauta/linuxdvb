@@ -9,7 +9,7 @@ mod frontend;
 
 pub use device::ReadWriteMode;
 pub use device::BlockMode;
-pub use frontend::Frontend;
+pub use frontend::*;
 pub use frontend::properties::*;
 
 #[test]
