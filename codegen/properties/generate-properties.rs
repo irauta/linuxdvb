@@ -213,7 +213,7 @@ fn make_simple_into(f: &mut File, enum_name: &str, variants: &[&str]) {
 }
 fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &[&str]) {
     writeln!(f, "impl FromProperty for {} {{", enum_name).unwrap();
-    writeln!(f, "    fn from_property(property: ffi::Struct_dtv_property) -> PropertyResult<Self> {{").unwrap();
+    writeln!(f, "    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
     writeln!(f, "        match ffi_property_data(property) {{").unwrap();
     for ffi_name in variants {
         let name = pascal_case(ffi_name);
@@ -256,7 +256,7 @@ fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &[&str], ty
 }
 
 fn make_property_value_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
-    writeln!(f, "pub fn {}(property: ffi::Struct_dtv_property) -> PropertyResult<{}> {{", fn_name, enum_name).unwrap();
+    writeln!(f, "pub fn {}(property: ffi::Struct_dtv_property) -> PropertyMappingResult<{}> {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match property.cmd {{").unwrap();
     for ffi_name in variants {
         let variant_info = types.iter().find(|t| &t.0 == ffi_name).unwrap();

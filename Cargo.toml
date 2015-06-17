@@ -10,6 +10,7 @@ build = "codegen/properties/generate-properties.rs"
 
 libc = "*"
 errno = "*"
+bitflags = "*"
 
 [build-dependencies]
 

@@ -1,6 +1,8 @@
 
 extern crate libc;
 extern crate errno;
+#[macro_use]
+extern crate bitflags;
 
 mod device;
 mod frontend;
