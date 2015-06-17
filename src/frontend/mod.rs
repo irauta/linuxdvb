@@ -1,6 +1,9 @@
 
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
+use std::default::Default;
+
+use libc::{c_uint, c_int,c_ulong};
 
 use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
 
@@ -38,29 +41,67 @@ impl Frontend {
     pub fn get_properties(&self, properties: &[properties::GetProperty]) -> PropertyResult<Vec<properties::GetPropertyValue>> {
         unimplemented!();
     }
+
     pub fn diseqc_reset_overload(&self) -> DeviceResult<()> {
-        unimplemented!();
+        self.device.ioctl_argumentless(ffi::FE_DISEQC_RESET_OVERLOAD as c_ulong)
     }
+
     pub fn diseqc_send_master_cmd(&self, command: DiseqcMasterCommand) -> DeviceResult<()> {
-        unimplemented!();
+        let mut ffi_cmd = ffi::Struct_dvb_diseqc_master_cmd {
+            msg: command.msg,
+            msg_len: command.msg_len
+        };
+        self.device.ioctl_pointer(ffi::FE_DISEQC_SEND_MASTER_CMD as c_ulong, &mut ffi_cmd)
     }
-    pub fn diseqc_recv_slave_reply(&self) -> DeviceResult<DiseqcSlaveReply> {
-        unimplemented!();
+
+    /// The timeout parameter is not used by most drivers. (2015-06-17)
+    pub fn diseqc_recv_slave_reply(&self, timeout: u32) -> DeviceResult<DiseqcSlaveReply> {
+        let mut ffi_reply: ffi::Struct_dvb_diseqc_slave_reply = Default::default();
+        ffi_reply.timeout = timeout as c_int;
+        try!(self.device.ioctl_pointer(ffi::FE_DISEQC_RECV_SLAVE_REPLY as c_ulong, &mut ffi_reply));
+        Ok(DiseqcSlaveReply {
+            msg: ffi_reply.msg,
+            msg_len: ffi_reply.msg_len
+        })
     }
+
     pub fn diseqc_send_burst(&self, command: SecMiniCmd) -> DeviceResult<()> {
-        unimplemented!();
+        let command = match command {
+            SecMiniCmd::A => ffi::SEC_MINI_A,
+            SecMiniCmd::B => ffi::SEC_MINI_B
+        };
+        let command_ptr: *const c_uint = &command;
+        self.device.ioctl_value(ffi::FE_DISEQC_SEND_BURST as c_ulong, command_ptr)
     }
+
     pub fn set_tone(&self, tone: SecToneMode) -> DeviceResult<()> {
-        unimplemented!();
+        let tone = match tone {
+            SecToneMode::On => ffi::SEC_TONE_ON,
+            SecToneMode::Off => ffi::SEC_TONE_OFF
+        };
+        let tone_ptr: *const c_uint = &tone;
+        self.device.ioctl_value(ffi::FE_SET_TONE as c_ulong, tone_ptr)
     }
+
     pub fn set_voltage(&self, voltage: properties::Voltage) -> DeviceResult<()> {
-        unimplemented!();
+        let voltage = match voltage {
+            properties::Voltage::SecVoltage13 => ffi::SEC_VOLTAGE_13,
+            properties::Voltage::SecVoltage18 => ffi::SEC_VOLTAGE_18,
+            properties::Voltage::SecVoltageOff => ffi::SEC_VOLTAGE_OFF,
+        };
+        self.device.ioctl_value(ffi::FE_SET_VOLTAGE as c_ulong, voltage)
     }
+
     pub fn enable_high_lnb_voltage(&self, high: u32) -> DeviceResult<()> {
-        unimplemented!();
+        self.device.ioctl_value(ffi::FE_ENABLE_HIGH_LNB_VOLTAGE as c_ulong, high)
     }
+
     pub fn set_frontend_tune_mode(&self, tune_mode: TuneMode) -> DeviceResult<()> {
-        unimplemented!();
+        let value = match tune_mode {
+            TuneMode::Normal => 0,
+            TuneMode::OneShot => ffi::FE_TUNE_MODE_ONESHOT
+        };
+        self.device.ioctl_value(ffi::FE_SET_FRONTEND_TUNE_MODE as c_ulong, value)
     }
 }
 
@@ -89,8 +130,7 @@ pub struct FrontendStatus {
 
 pub struct DiseqcSlaveReply {
     pub msg: [u8; 4],
-    pub msg_len: u8,
-    pub timeout: i32
+    pub msg_len: u8
 }
 
 pub struct DiseqcMasterCommand {
