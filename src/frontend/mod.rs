@@ -1,4 +1,5 @@
 
+use std::ffi::CStr;
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::default::Default;
@@ -30,7 +31,21 @@ impl Frontend {
     }
 
     pub fn get_info(&self) -> DeviceResult<FrontendInfo> {
-        unimplemented!();
+        let mut ffi_info: ffi::Struct_dvb_frontend_info = Default::default();
+        try!(self.device.ioctl_pointer(ffi::FE_GET_INFO as c_ulong, &mut ffi_info));
+        let c_name = unsafe { CStr::from_ptr(ffi_info.name.as_ptr()) };
+        Ok(FrontendInfo {
+            name: String::from_utf8_lossy(c_name.to_bytes()).into_owned(),
+            frequency_min: ffi_info.frequency_min,
+            frequency_max: ffi_info.frequency_max,
+            frequency_stepsize: ffi_info.frequency_stepsize,
+            frequency_tolerance: ffi_info.frequency_tolerance,
+            symbol_rate_min: ffi_info.symbol_rate_min,
+            symbol_rate_max: ffi_info.symbol_rate_max,
+            symbol_rate_tolerance: ffi_info.symbol_rate_tolerance,
+            // Is truncate a good choice?
+            caps: caps::FrontendCaps::from_bits_truncate(ffi_info.caps),
+        })
     }
     pub fn read_status(&self) -> DeviceResult<FrontendStatus> {
         let mut ffi_status: ffi::Enum_fe_status = 0;
