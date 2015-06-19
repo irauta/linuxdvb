@@ -126,6 +126,7 @@ pub struct FrontendInfo {
     pub caps: caps::FrontendCaps,
 }
 
+#[derive(Copy,Clone,Debug)]
 pub struct FrontendStatus {
     pub has_signal: bool,
     pub has_carrier: bool,
@@ -136,26 +137,31 @@ pub struct FrontendStatus {
     pub reinit: bool
 }
 
+#[derive(Copy,Clone,Debug)]
 pub struct DiseqcSlaveReply {
     pub msg: [u8; 4],
     pub msg_len: u8
 }
 
+#[derive(Copy,Clone,Debug)]
 pub struct DiseqcMasterCommand {
     pub msg: [u8; 6],
     pub msg_len: u8
 }
 
+#[derive(Copy,Clone,Debug)]
 pub enum SecMiniCmd {
     A,
     B
 }
 
+#[derive(Copy,Clone,Debug)]
 pub enum SecToneMode {
     On,
     Off
 }
 
+#[derive(Copy,Clone,Debug)]
 pub enum TuneMode {
     Normal,
     OneShot
