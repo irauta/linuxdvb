@@ -3,7 +3,7 @@ use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::default::Default;
 
-use libc::{c_uint, c_int,c_ulong};
+use libc::{c_int,c_ulong};
 
 use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
 
@@ -66,21 +66,19 @@ impl Frontend {
     }
 
     pub fn diseqc_send_burst(&self, command: SecMiniCmd) -> DeviceResult<()> {
-        let command = match command {
+        let mut command = match command {
             SecMiniCmd::A => ffi::SEC_MINI_A,
             SecMiniCmd::B => ffi::SEC_MINI_B
         };
-        let command_ptr: *const c_uint = &command;
-        self.device.ioctl_value(ffi::FE_DISEQC_SEND_BURST as c_ulong, command_ptr)
+        self.device.ioctl_pointer(ffi::FE_DISEQC_SEND_BURST as c_ulong, &mut command)
     }
 
     pub fn set_tone(&self, tone: SecToneMode) -> DeviceResult<()> {
-        let tone = match tone {
+        let mut tone = match tone {
             SecToneMode::On => ffi::SEC_TONE_ON,
             SecToneMode::Off => ffi::SEC_TONE_OFF
         };
-        let tone_ptr: *const c_uint = &tone;
-        self.device.ioctl_value(ffi::FE_SET_TONE as c_ulong, tone_ptr)
+        self.device.ioctl_pointer(ffi::FE_SET_TONE as c_ulong, &mut tone)
     }
 
     pub fn set_voltage(&self, voltage: properties::Voltage) -> DeviceResult<()> {
