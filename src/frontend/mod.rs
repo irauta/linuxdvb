@@ -33,7 +33,17 @@ impl Frontend {
         unimplemented!();
     }
     pub fn read_status(&self) -> DeviceResult<FrontendStatus> {
-        unimplemented!();
+        let mut ffi_status: ffi::Enum_fe_status = 0;
+        try!(self.device.ioctl_pointer(ffi::FE_READ_STATUS as c_ulong, &mut ffi_status));
+        Ok(FrontendStatus {
+            has_signal: ffi_status & ffi::FE_HAS_SIGNAL != 0,
+            has_carrier: ffi_status & ffi::FE_HAS_CARRIER != 0,
+            has_viterbi: ffi_status & ffi::FE_HAS_VITERBI != 0,
+            has_sync: ffi_status & ffi::FE_HAS_SYNC != 0,
+            has_lock: ffi_status & ffi::FE_HAS_LOCK != 0,
+            timedout: ffi_status & ffi::FE_TIMEDOUT != 0,
+            reinit: ffi_status & ffi::FE_REINIT != 0,
+        })
     }
     pub fn set_properties(&self, properties: &[properties::SetPropertyValue]) -> DeviceResult<()> {
         unimplemented!();
