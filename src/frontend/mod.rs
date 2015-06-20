@@ -47,6 +47,7 @@ impl Frontend {
             caps: caps::FrontendCaps::from_bits_truncate(ffi_info.caps),
         })
     }
+
     pub fn read_status(&self) -> DeviceResult<FrontendStatus> {
         let mut ffi_status: ffi::Enum_fe_status = 0;
         try!(self.device.ioctl_pointer(ffi::FE_READ_STATUS as c_ulong, &mut ffi_status));
@@ -60,6 +61,7 @@ impl Frontend {
             reinit: ffi_status & ffi::FE_REINIT != 0,
         })
     }
+
     pub fn set_properties(&self, properties: &[properties::SetPropertyValue]) -> DeviceResult<()> {
         let mut ffi_property_list: Vec<ffi::Struct_dtv_property> = properties.iter().map(
             properties::set_property_value
