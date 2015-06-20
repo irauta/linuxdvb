@@ -61,7 +61,14 @@ impl Frontend {
         })
     }
     pub fn set_properties(&self, properties: &[properties::SetPropertyValue]) -> DeviceResult<()> {
-        unimplemented!();
+        let mut ffi_property_list: Vec<ffi::Struct_dtv_property> = properties.iter().map(
+            properties::set_property_value
+        ).collect();
+        let mut ffi_properties = ffi::Struct_dtv_properties {
+            num: ffi_property_list.len() as u32,
+            props: ffi_property_list.as_mut_ptr()
+        };
+        self.device.ioctl_pointer(ffi::FE_SET_PROPERTY as c_ulong, &mut ffi_properties)
     }
 
     pub fn get_properties(&self, properties: &[properties::GetProperty]) -> PropertyResult<Vec<properties::GetPropertyValue>> {
