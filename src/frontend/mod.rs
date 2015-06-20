@@ -63,8 +63,22 @@ impl Frontend {
     pub fn set_properties(&self, properties: &[properties::SetPropertyValue]) -> DeviceResult<()> {
         unimplemented!();
     }
+
     pub fn get_properties(&self, properties: &[properties::GetProperty]) -> PropertyResult<Vec<properties::GetPropertyValue>> {
-        unimplemented!();
+        let mut ffi_property_list: Vec<ffi::Struct_dtv_property> = properties.iter().map(
+            |p| ffi::Struct_dtv_property { cmd: (*p).into(), ..Default::default() }
+        ).collect();
+        let mut ffi_properties = ffi::Struct_dtv_properties {
+            num: ffi_property_list.len() as u32,
+            props: ffi_property_list.as_mut_ptr()
+        };
+        try!(self.device.ioctl_pointer(ffi::FE_GET_PROPERTY as c_ulong, &mut ffi_properties));
+        let mut values = vec!();
+        for ffi_property in ffi_property_list {
+            let value = try!(properties::get_property_value(ffi_property));
+            values.push(value);
+        }
+        Ok(values)
     }
 
     pub fn diseqc_reset_overload(&self) -> DeviceResult<()> {
@@ -203,6 +217,18 @@ impl Error for PropertyError {
             PropertyError::DeviceError(ref err) => Some(err),
             PropertyError::PropertyMappingError(ref err) => Some(err)
         }
+    }
+}
+
+impl From<DeviceError> for PropertyError {
+    fn from(err: DeviceError) -> PropertyError {
+        PropertyError::DeviceError(err)
+    }
+}
+
+impl From<properties::PropertyMappingError> for PropertyError {
+    fn from(err: properties::PropertyMappingError) -> PropertyError {
+        PropertyError::PropertyMappingError(err)
     }
 }
 
