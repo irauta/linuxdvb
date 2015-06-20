@@ -241,7 +241,7 @@ fn make_enum(f: &mut File, enum_name: &str, variants: &[&str]) {
     make_simple_from_property(f, enum_name, variants);
 }
 
-fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
+fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &[&str], types: &[PropertyType], include_empty: bool) {
     writeln!(f, "#[derive(Copy,Clone,Debug)]").unwrap();
     writeln!(f, "pub enum {} {{", enum_name).unwrap();
     for ffi_name in variants {
@@ -250,12 +250,14 @@ fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &[&str], ty
         // There's no point in having a "value enum" when there's no type => no value to be carried
         if !variant_info.1.is_empty() {
             writeln!(f, "    {}({}),", name, variant_info.1).unwrap();
+        } else if include_empty {
+            writeln!(f, "    {},", name).unwrap();
         }
     }
     writeln!(f, "}}").unwrap();
 }
 
-fn make_property_value_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
+fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
     writeln!(f, "pub fn {}(property: ffi::Struct_dtv_property) -> PropertyMappingResult<{}> {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match property.cmd {{").unwrap();
     for ffi_name in variants {
@@ -272,13 +274,32 @@ fn make_property_value_fn(f: &mut File, fn_name: &str, enum_name: &str, variants
     writeln!(f, "}}").unwrap();
 }
 
+fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
+    writeln!(f, "pub fn {}(property: &{}) -> ffi::Struct_dtv_property {{", fn_name, enum_name).unwrap();
+    writeln!(f, "    match *property {{").unwrap();
+    for ffi_name in variants {
+        let variant_info = types.iter().find(|t| &t.0 == ffi_name).unwrap();
+        let name = pascal_case(ffi_name);
+        if variant_info.1.is_empty() {
+            writeln!(f, "        {}::{} => make_ffi_property({}::{}, 0),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+        } else if variant_info.1 == "i32" {
+            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value as u32),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+        } else {
+            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value.into()),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+        }
+    }
+    writeln!(f, "    }}").unwrap();
+    writeln!(f, "}}").unwrap();
+}
+
 fn make_property_enums(f: &mut File) {
     make_simple_enum(f, "GetProperty", GET_PROPERTIES);
     make_simple_into(f, "GetProperty", GET_PROPERTIES);
 
-    make_property_value_enum(f, "GetPropertyValue", GET_PROPERTIES, PROPERTIES);
-    make_property_value_fn(f, "get_property_value", "GetPropertyValue", GET_PROPERTIES, PROPERTIES);
-    make_property_value_enum(f, "SetPropertyValue", SET_PROPERTIES, PROPERTIES);
+    make_property_value_enum(f, "GetPropertyValue", GET_PROPERTIES, PROPERTIES, false);
+    make_property_value_getter_fn(f, "get_property_value", "GetPropertyValue", GET_PROPERTIES, PROPERTIES);
+    make_property_value_enum(f, "SetPropertyValue", SET_PROPERTIES, PROPERTIES, true);
+    make_property_value_setter_fn(f, "set_property_value", "SetPropertyValue", SET_PROPERTIES, PROPERTIES);
 }
 
 fn main() {

@@ -46,6 +46,13 @@ fn ffi_property_data(property: ffi::Struct_dtv_property) -> u32 {
         *property.u.data()
     }
 }
+fn make_ffi_property(cmd: u32, value: u32) -> ffi::Struct_dtv_property {
+    let mut p = ffi::Struct_dtv_property { cmd: cmd, ..Default::default() };
+    unsafe {
+        *p.u.data() = value;
+    }
+    p
+}
 
 #[derive(Copy,Clone,Debug)]
 pub enum Lna {
