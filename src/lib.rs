@@ -11,7 +11,3 @@ pub use device::ReadWriteMode;
 pub use device::BlockMode;
 pub use frontend::*;
 pub use frontend::properties::*;
-
-#[test]
-fn it_works() {
-}

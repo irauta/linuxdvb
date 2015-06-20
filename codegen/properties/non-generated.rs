@@ -169,3 +169,11 @@ impl FromProperty for ApiVersion {
         Ok(ApiVersion { major: major as u8, minor: minor as u8 })
     }
 }
+
+#[test]
+fn ffi_property_generation() {
+    let mut property = make_ffi_property(123, 456);
+    assert_eq!(property.cmd, 123);
+    let data = unsafe { *property.u.data() };
+    assert_eq!(data, 456);
+}
