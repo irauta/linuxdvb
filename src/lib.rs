@@ -20,7 +20,6 @@ extern crate bitflags;
 mod device;
 mod frontend;
 
-pub use device::ReadWriteMode;
-pub use device::BlockMode;
+pub use device::{ReadWriteMode,BlockMode,DeviceError};
 pub use frontend::*;
 pub use frontend::properties::*;
