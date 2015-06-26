@@ -45,6 +45,9 @@ fn show_frontend_info(path: &Path) -> SimpleResult {
     println!("Maximal symbol rate: {}", info.symbol_rate_max);
     println!("Maximal symbol rate tolerance: {}", info.symbol_rate_tolerance);
 
+    let caps: Vec<linuxdvb::caps::FrontendCapsEnum> = info.caps.into();
+    println!("Frontend capabilities: {:?}", caps);
+
     Ok(())
 }
 
