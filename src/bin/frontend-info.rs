@@ -18,7 +18,7 @@ use std::fs;
 use std::error::Error;
 use std::path::Path;
 
-use linuxdvb::{Frontend,ReadWriteMode,BlockMode,properties};
+use linuxdvb::{Frontend,ReadWriteMode,BlockMode};
 use linuxdvb::properties::GetProperty as GP;
 use linuxdvb::properties::GetPropertyValue as GPV;
 
