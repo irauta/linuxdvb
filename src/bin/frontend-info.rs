@@ -22,10 +22,13 @@ use linuxdvb::{Frontend,ReadWriteMode,BlockMode};
 use linuxdvb::properties::GetProperty as GP;
 use linuxdvb::properties::GetPropertyValue as GPV;
 
-type SimpleResult = Result<(), Box<Error>>;
+type SimpleResult<T> = Result<T, Box<Error>>;
 
-fn show_frontend_info(path: &Path) -> SimpleResult {
+fn show_frontend_info(path: &Path, yet_another_one: bool) -> SimpleResult<()> {
     let frontend = Frontend::open("/dev/dvb/adapter0/frontend0", ReadWriteMode::ReadOnly, BlockMode::NonBlocking).unwrap();
+    if yet_another_one {
+        println!("--");
+    }
     println!("Device: {}", path.to_string_lossy());
     let info = try!(frontend.get_info());
     println!("Name: {}", info.name);
@@ -51,7 +54,8 @@ fn show_frontend_info(path: &Path) -> SimpleResult {
     Ok(())
 }
 
-fn iterate_devices(adapter_dir: &Path) -> SimpleResult {
+fn iterate_devices(adapter_dir: &Path, yet_another_one: bool) -> SimpleResult<bool> {
+    let mut has_frontend = yet_another_one;
     for device in try!(fs::read_dir(adapter_dir)) {
         let device = try!(device);
         let is_frontend = device.path().file_name()
@@ -59,23 +63,31 @@ fn iterate_devices(adapter_dir: &Path) -> SimpleResult {
             .unwrap_or(None)
             .map_or(false, |f| f.starts_with("frontend"));
         if is_frontend {
-            try!(show_frontend_info(&device.path()));
+            try!(show_frontend_info(&device.path(), yet_another_one));
+            has_frontend = true;
         }
     }
-    Ok(())
+    Ok(has_frontend)
 }
 
-fn iterate_adapters() -> SimpleResult {
+fn iterate_adapters() -> SimpleResult<bool> {
+    let mut has_frontend = false;
     for adapter_dir in try!(fs::read_dir("/dev/dvb")) {
         let adapter_dir = try!(adapter_dir);
-        try!(iterate_devices(&adapter_dir.path()));
+        has_frontend = has_frontend || try!(iterate_devices(&adapter_dir.path(), has_frontend));
     }
-    Ok(())
+    Ok(has_frontend)
 }
 
 fn main() {
-    match iterate_adapters() {
-        Ok(_) => (),
-        Err(error) => println!("Error: {}", error.description())
+    let has_frontend = match iterate_adapters() {
+        Ok(has_frontend) => has_frontend,
+        Err(error) => {
+            println!("Error: {}", error.description());
+            return;
+        }
+    };
+    if !has_frontend {
+        println!("No DVB frontend devices were found");
     }
 }
