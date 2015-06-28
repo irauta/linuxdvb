@@ -55,7 +55,7 @@ fn show_frontend_info(path: &Path, yet_another_one: bool) -> SimpleResult<()> {
 }
 
 fn iterate_devices(adapter_dir: &Path, yet_another_one: bool) -> SimpleResult<bool> {
-    let mut has_frontend = yet_another_one;
+    let mut has_frontend = false;
     for device in try!(fs::read_dir(adapter_dir)) {
         let device = try!(device);
         let is_frontend = device.path().file_name()
@@ -74,7 +74,8 @@ fn iterate_adapters() -> SimpleResult<bool> {
     let mut has_frontend = false;
     for adapter_dir in try!(fs::read_dir("/dev/dvb")) {
         let adapter_dir = try!(adapter_dir);
-        has_frontend = has_frontend || try!(iterate_devices(&adapter_dir.path(), has_frontend));
+        let is_frontend = try!(iterate_devices(&adapter_dir.path(), has_frontend));
+        has_frontend = is_frontend || has_frontend;
     }
     Ok(has_frontend)
 }
