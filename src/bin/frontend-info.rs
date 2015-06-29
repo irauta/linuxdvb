@@ -25,7 +25,7 @@ use linuxdvb::properties::GetPropertyValue as GPV;
 type SimpleResult<T> = Result<T, Box<Error>>;
 
 fn show_frontend_info(path: &Path, yet_another_one: bool) -> SimpleResult<()> {
-    let frontend = Frontend::open("/dev/dvb/adapter0/frontend0", ReadWriteMode::ReadOnly, BlockMode::NonBlocking).unwrap();
+    let frontend = Frontend::open(path, ReadWriteMode::ReadOnly, BlockMode::NonBlocking).unwrap();
     if yet_another_one {
         println!("--");
     }
