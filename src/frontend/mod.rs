@@ -16,6 +16,7 @@ use std::ffi::CStr;
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::default::Default;
+use std::path::Path;
 
 use libc::{c_int,c_ulong};
 
@@ -38,8 +39,8 @@ pub struct Frontend {
 }
 
 impl Frontend {
-    pub fn open(filename: &str, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Frontend> {
-        let device = try!(DeviceFileDescriptor::open(filename, rw_mode, block_mode));
+    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Frontend> {
+        let device = try!(DeviceFileDescriptor::open(file, rw_mode, block_mode));
         Ok(Frontend { device: device })
     }
 

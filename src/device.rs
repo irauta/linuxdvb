@@ -16,6 +16,7 @@ use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::ffi::CString;
 use std::borrow::Borrow;
+use std::path::Path;
 
 use libc::{c_ulong,c_int};
 use libc::{open,close};
@@ -73,7 +74,7 @@ pub struct DeviceFileDescriptor {
 }
 
 impl DeviceFileDescriptor {
-    pub fn open(filename: &str, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<DeviceFileDescriptor> {
+    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<DeviceFileDescriptor> {
         let mode = match rw_mode {
             ReadWriteMode::ReadOnly => O_RDONLY,
             ReadWriteMode::ReadWrite => O_RDWR
@@ -82,7 +83,8 @@ impl DeviceFileDescriptor {
             BlockMode::Blocking => 0,
             BlockMode::NonBlocking => O_NONBLOCK
         };
-        let c_filename = CString::new(filename).unwrap();
+        let file_string = file.to_string_lossy().into_owned();
+        let c_filename = CString::new(file_string).unwrap();
         let fd = unsafe {
             open(c_filename.as_ptr(), mode | blocking, 0)
         };
