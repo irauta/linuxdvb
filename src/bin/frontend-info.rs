@@ -51,6 +51,16 @@ fn show_frontend_info(path: &Path, yet_another_one: bool) -> SimpleResult<()> {
     let caps: Vec<linuxdvb::caps::FrontendCapsEnum> = info.caps.into();
     println!("Frontend capabilities: {:?}", caps);
 
+    let status = try!(frontend.read_status());
+    println!("Status:");
+    println!("    Has a signal: {}", status.has_signal);
+    println!("    Has DVB signal: {}", status.has_carrier);
+    println!("    Inner coding is stable: {}", status.has_viterbi);
+    println!("    Synchronization bytes found: {}", status.has_sync);
+    println!("    Has DVB lock: {}", status.has_lock);
+    println!("    Timed out: {}", status.timedout);
+    println!("    Frontend was reinitialized: {}", status.reinit);
+
     Ok(())
 }
 
