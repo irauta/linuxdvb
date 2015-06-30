@@ -23,7 +23,7 @@
 
 # How to use this script:
 #
-#     ./frontend.sh | rust-bindgen -o >(sed -re 's/-[0-9]+/\1i32 as ::libc::c_uint/' > output.rs) -x c -
+#     ./frontend.sh | rust-bindgen -o >(sed -re 's/(-[0-9]+)/\1i32 as ::libc::c_uint/' > output.rs) -x c -
 #
 # Pipe it's output to rust-bindgen, which then outputs to some file. The input is read from stdin
 # (the last dash, normally it would be the file name). The -x c tells the language - this is
