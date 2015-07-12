@@ -14,3 +14,71 @@
 
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
+
+use libc::{c_ulong};
+
+pub struct Demux {
+    device: DeviceFileDescriptor
+}
+
+use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
+
+impl Demux {
+    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Frontend> {
+        let device = try!(DeviceFileDescriptor::open(file, rw_mode, block_mode));
+        Ok(Demux { device: device })
+    }
+
+    pub fn read(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    // Should this even exist here?
+    pub fn write(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn start(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn stop(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn set_filter(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn set_pes_filter(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn set_buffer_size(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn get_system_time_counter(&self) -> DeviceResult<SystemTimeCounter> {
+        unimplemented!();
+    }
+
+    pub fn get_pes_pids(&self) -> DeviceResult<[u16; 5]> {
+        unimplemented!();
+    }
+
+    pub fn get_caps(&self) -> DeviceResult<DemuxCaps> {
+        unimplemented!();
+    }
+
+    pub fn set_source(&self) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn add_pid(&self, pid: u16) -> DeviceResult<()> {
+        unimplemented!();
+    }
+
+    pub fn remove_pid(&selfm, pid: u16) -> DeviceResult<()> {
+        unimplemented!();
+    }
+}
