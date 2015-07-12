@@ -39,11 +39,11 @@ impl Demux {
     }
 
     pub fn start(&self) -> DeviceResult<()> {
-        unimplemented!();
+        self.device.ioctl_argumentless(ffi::DMX_START as c_ulong)
     }
 
     pub fn stop(&self) -> DeviceResult<()> {
-        unimplemented!();
+        self.device.ioctl_argumentless(ffi::DMX_STOP as c_ulong)
     }
 
     pub fn set_filter(&self) -> DeviceResult<()> {
