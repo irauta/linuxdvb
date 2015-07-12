@@ -54,8 +54,8 @@ impl Demux {
         unimplemented!();
     }
 
-    pub fn set_buffer_size(&self) -> DeviceResult<()> {
-        unimplemented!();
+    pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
+        self.device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE, &(buffer_size as c_ulong))
     }
 
     pub fn get_system_time_counter(&self) -> DeviceResult<SystemTimeCounter> {
