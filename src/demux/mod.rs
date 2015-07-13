@@ -82,11 +82,13 @@ impl Demux {
     }
 
     pub fn add_pid(&self, pid: u16) -> DeviceResult<()> {
-        unimplemented!();
+        let mut ffi_pid = pid;
+        self.device.ioctl_pointer(ffi::DMX_ADD_PID as c_ulong, &mut ffi_pid)
     }
 
     pub fn remove_pid(&self, pid: u16) -> DeviceResult<()> {
-        unimplemented!();
+        let mut ffi_pid = pid;
+        self.device.ioctl_pointer(ffi::DMX_REMOVE_PID as c_ulong, &mut ffi_pid)
     }
 }
 
