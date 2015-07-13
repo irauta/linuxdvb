@@ -17,7 +17,7 @@ mod ffi;
 
 use std::path::Path;
 
-use libc::{c_ulong};
+use libc::{c_uint,c_ulong};
 
 pub struct Demux {
     device: DeviceFileDescriptor
@@ -61,8 +61,10 @@ impl Demux {
         self.device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE as c_ulong, &mut ffi_size)
     }
 
-    pub fn get_system_time_counter(&self) -> DeviceResult<SystemTimeCounter> {
-        unimplemented!();
+    pub fn get_system_time_counter(&self, num: u32) -> DeviceResult<SystemTimeCounter> {
+        let mut ffi_stc = ffi::Struct_dmx_stc { num: num as c_uint, base: 0, stc: 0 };
+        try!(self.device.ioctl_pointer(ffi::DMX_GET_STC as c_ulong, &mut ffi_stc));
+        Ok(SystemTimeCounter { base: ffi_stc.base, counter: ffi_stc.stc })
     }
 
     pub fn get_pes_pids(&self) -> DeviceResult<[u16; 5]> {
@@ -97,4 +99,7 @@ pub struct DemuxCaps {
     pub num_decoders: i32
 }
 
-pub struct SystemTimeCounter;
+pub struct SystemTimeCounter {
+    pub base: u32,
+    pub counter: u64
+}
