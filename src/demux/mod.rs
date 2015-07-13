@@ -15,6 +15,8 @@
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
 
+use std::path::Path;
+
 use libc::{c_ulong};
 
 pub struct Demux {
@@ -24,7 +26,7 @@ pub struct Demux {
 use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
 
 impl Demux {
-    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Frontend> {
+    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Demux> {
         let device = try!(DeviceFileDescriptor::open(file, rw_mode, block_mode));
         Ok(Demux { device: device })
     }
@@ -55,7 +57,8 @@ impl Demux {
     }
 
     pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
-        self.device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE, &(buffer_size as c_ulong))
+        let mut ffi_size = buffer_size as c_ulong;
+        self.device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE as c_ulong, &mut ffi_size)
     }
 
     pub fn get_system_time_counter(&self) -> DeviceResult<SystemTimeCounter> {
@@ -78,7 +81,10 @@ impl Demux {
         unimplemented!();
     }
 
-    pub fn remove_pid(&selfm, pid: u16) -> DeviceResult<()> {
+    pub fn remove_pid(&self, pid: u16) -> DeviceResult<()> {
         unimplemented!();
     }
 }
+
+pub struct DemuxCaps;
+pub struct SystemTimeCounter;

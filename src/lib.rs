@@ -19,7 +19,9 @@ extern crate bitflags;
 
 mod device;
 mod frontend;
+mod demux;
 
 pub use device::{ReadWriteMode,BlockMode,DeviceError};
 pub use frontend::*;
 pub use frontend::properties::*;
+pub use demux::*;
