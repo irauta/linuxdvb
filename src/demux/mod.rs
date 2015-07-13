@@ -23,7 +23,7 @@ pub struct Demux {
     device: DeviceFileDescriptor
 }
 
-use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
+use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult};
 
 impl Demux {
     pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Demux> {
