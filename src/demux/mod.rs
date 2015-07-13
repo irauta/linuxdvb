@@ -69,8 +69,12 @@ impl Demux {
         unimplemented!();
     }
 
+    /// This function is undocumented in the official, and doesn't seem to be actually in use.
+    /// It is still nevertheless included here, if it is used by out-of-tree DVB drivers.
     pub fn get_caps(&self) -> DeviceResult<DemuxCaps> {
-        unimplemented!();
+        let mut ffi_caps = ffi::Struct_dmx_caps { caps: 0, num_decoders: 0 };
+        try!(self.device.ioctl_pointer(ffi::DMX_GET_CAPS as c_ulong, &mut ffi_caps));
+        Ok(DemuxCaps { caps: ffi_caps.caps, num_decoders: ffi_caps.num_decoders as i32 })
     }
 
     pub fn set_source(&self) -> DeviceResult<()> {
@@ -86,5 +90,9 @@ impl Demux {
     }
 }
 
-pub struct DemuxCaps;
+pub struct DemuxCaps {
+    pub caps: u32,
+    pub num_decoders: i32
+}
+
 pub struct SystemTimeCounter;
