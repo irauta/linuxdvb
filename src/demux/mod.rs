@@ -16,8 +16,17 @@
 mod ffi;
 
 use std::path::Path;
-
 use libc::{c_uint,c_ulong};
+
+
+#[allow(dead_code,non_camel_case_types,non_snake_case)]
+mod enums {
+    use super::ffi as ffi;
+
+    include!(concat!(env!("OUT_DIR"), "/demux-enums.rs"));
+}
+
+pub use self::enums::{Input,Output,PesType};
 
 pub struct Demux {
     device: DeviceFileDescriptor
@@ -102,4 +111,25 @@ pub struct DemuxCaps {
 pub struct SystemTimeCounter {
     pub base: u32,
     pub counter: u64
+}
+
+pub struct DemuxFilter {
+    pub filter: [u8; ffi::DMX_FILTER_SIZE as usize],
+    pub mask: [u8; ffi::DMX_FILTER_SIZE as usize],
+    pub mode: [u8; ffi::DMX_FILTER_SIZE as usize],
+}
+
+pub struct SectionFilterParams {
+    pub pid: u16,
+    pub filter: DemuxFilter,
+    pub timeout: u32,
+    // pub flags: flags::SectionFilterFlags
+}
+
+pub struct PesFilterParams {
+    pub pid: u16,
+    pub input: Input,
+    pub output: Output,
+    pub pes_type: PesType,
+    pub flags: u32
 }

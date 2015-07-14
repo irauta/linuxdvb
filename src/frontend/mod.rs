@@ -31,7 +31,7 @@ pub mod caps;
 pub mod properties {
     use super::ffi as ffi;
 
-    include!(concat!(env!("OUT_DIR"), "/frontend-properties.rs"));
+    include!(concat!(env!("OUT_DIR"), "/frontend-enums.rs"));
 }
 
 pub struct Frontend {

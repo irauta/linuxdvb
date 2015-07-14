@@ -4,7 +4,7 @@ name = "linuxdvb"
 version = "0.0.1"
 authors = ["Ilkka Rauta <ilkka.rauta@gmail.com>"]
 
-build = "codegen/properties/generate-properties.rs"
+build = "codegen/enums/generate-enums.rs"
 
 [dependencies]
 
