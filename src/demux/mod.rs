@@ -82,14 +82,16 @@ impl Demux {
         Ok(ffi_pids)
     }
 
-    /// This function is undocumented in the official, and doesn't seem to be actually in use.
-    /// It is still nevertheless included here, if it is used by out-of-tree DVB drivers.
+    /// This function is undocumented in the official documentation, and doesn't seem to be
+    /// actually in use. It is still nevertheless included here, if it is used by out-of-tree DVB
+    /// drivers.
     pub fn get_caps(&self) -> DeviceResult<DemuxCaps> {
         let mut ffi_caps = ffi::Struct_dmx_caps { caps: 0, num_decoders: 0 };
         try!(self.device.ioctl_pointer(ffi::DMX_GET_CAPS as c_ulong, &mut ffi_caps));
         Ok(DemuxCaps { caps: ffi_caps.caps, num_decoders: ffi_caps.num_decoders as i32 })
     }
 
+    /// Like get_caps(), this doesn't seem to be actively in use in Linux, but is still implemented.
     pub fn set_source(&self, source: enums::DemuxSource) -> DeviceResult<()> {
         let mut ffi_source: ffi::dmx_source_t =  source.into();
         self.device.ioctl_pointer(ffi::DMX_SET_SOURCE as c_ulong, &mut ffi_source)
