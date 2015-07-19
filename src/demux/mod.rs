@@ -57,12 +57,29 @@ impl Demux {
         self.device.ioctl_argumentless(ffi::DMX_STOP as c_ulong)
     }
 
-    pub fn set_filter(&self) -> DeviceResult<()> {
-        unimplemented!();
+    pub fn set_filter(&self, filter_params: &SectionFilterParams) -> DeviceResult<()> {
+        let mut ffi_params = ffi::Struct_dmx_sct_filter_params {
+            pid: filter_params.pid,
+            filter: ffi::Struct_dmx_filter {
+                filter: filter_params.filter.filter,
+                mask: filter_params.filter.mask,
+                mode: filter_params.filter.mode,
+            },
+            timeout: filter_params.timeout,
+            flags: filter_params.flags.bits()
+        };
+        self.device.ioctl_pointer(ffi::DMX_SET_FILTER as c_ulong, &mut ffi_params)
     }
 
-    pub fn set_pes_filter(&self) -> DeviceResult<()> {
-        unimplemented!();
+    pub fn set_pes_filter(&self, filter_params: &PesFilterParams) -> DeviceResult<()> {
+        let mut ffi_params = ffi::Struct_dmx_pes_filter_params {
+            pid: filter_params.pid,
+            input: filter_params.input.into(),
+            output: filter_params.output.into(),
+            pes_type: filter_params.pes_type.into(),
+            flags: filter_params.flags.bits()
+        };
+        self.device.ioctl_pointer(ffi::DMX_SET_PES_FILTER as c_ulong, &mut ffi_params)
     }
 
     pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
