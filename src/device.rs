@@ -103,7 +103,7 @@ impl DeviceFileDescriptor {
         make_result(result)
     }
 
-    pub fn ioctl_pointer<T>(&self, request: c_ulong, argument: &mut T) -> DeviceResult<()> {
+    pub fn ioctl_pointer<T>(&self, request: c_ulong, argument: *mut T) -> DeviceResult<()> {
         let result = unsafe {
             ioctl(self.fd, request, argument)
         };
