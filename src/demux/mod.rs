@@ -77,7 +77,9 @@ impl Demux {
     }
 
     pub fn get_pes_pids(&self) -> DeviceResult<[u16; 5]> {
-        unimplemented!();
+        let mut ffi_pids = [0u16; 5];
+        try!(self.device.ioctl_pointer(ffi::DMX_GET_PES_PIDS as c_ulong, ffi_pids.as_mut_ptr()));
+        Ok(ffi_pids)
     }
 
     /// This function is undocumented in the official, and doesn't seem to be actually in use.
