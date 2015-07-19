@@ -90,8 +90,9 @@ impl Demux {
         Ok(DemuxCaps { caps: ffi_caps.caps, num_decoders: ffi_caps.num_decoders as i32 })
     }
 
-    pub fn set_source(&self) -> DeviceResult<()> {
-        unimplemented!();
+    pub fn set_source(&self, source: enums::DemuxSource) -> DeviceResult<()> {
+        let mut ffi_source: ffi::dmx_source_t =  source.into();
+        self.device.ioctl_pointer(ffi::DMX_SET_SOURCE as c_ulong, &mut ffi_source)
     }
 
     pub fn add_pid(&self, pid: u16) -> DeviceResult<()> {
