@@ -128,7 +128,7 @@ pub struct SectionFilterParams {
     pub pid: u16,
     pub filter: DemuxFilter,
     pub timeout: u32,
-    // pub flags: flags::SectionFilterFlags
+    pub flags: flags::SectionFilterFlags
 }
 
 pub struct PesFilterParams {
@@ -136,5 +136,23 @@ pub struct PesFilterParams {
     pub input: Input,
     pub output: Output,
     pub pes_type: PesType,
-    pub flags: u32
+    pub flags: flags::PesFilterFlags
+}
+
+#[allow(dead_code,non_upper_case_globals)]
+pub mod flags {
+    use super::ffi as ffi;
+    bitflags!{
+        flags SectionFilterFlags: u32 {
+            const SecCheckCrC = ffi::DMX_CHECK_CRC,
+            const SecOneShot = ffi::DMX_ONESHOT,
+            const SecImmediateStart = ffi::DMX_IMMEDIATE_START
+        }
+    }
+
+    bitflags!{
+        flags PesFilterFlags: u32 {
+            const PesImmediateStart = ffi::DMX_IMMEDIATE_START
+        }
+    }
 }
