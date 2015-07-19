@@ -42,6 +42,17 @@ pub fn generate() {
         "DMX_OUT_TSDEMUX_TAP"
     ], FFI_MOD);
 
+    make_enum(&mut f, "DemuxSource", &[
+        "DMX_SOURCE_FRONT0",
+        "DMX_SOURCE_FRONT1",
+        "DMX_SOURCE_FRONT2",
+        "DMX_SOURCE_FRONT3",
+        "DMX_SOURCE_DVR0",
+        "DMX_SOURCE_DVR1",
+        "DMX_SOURCE_DVR2",
+        "DMX_SOURCE_DVR3"
+    ], FFI_MOD);
+
     make_enum(&mut f, "PesType", &[
         "DMX_PES_AUDIO0",
         "DMX_PES_VIDEO0",
