@@ -40,13 +40,8 @@ impl Demux {
         Ok(Demux { device: device })
     }
 
-    pub fn read(&self) -> DeviceResult<()> {
-        unimplemented!();
-    }
-
-    // Should this even exist here?
-    pub fn write(&self) -> DeviceResult<()> {
-        unimplemented!();
+    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+        self.device.read(buffer)
     }
 
     pub fn start(&self) -> DeviceResult<()> {
@@ -83,8 +78,7 @@ impl Demux {
     }
 
     pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
-        let mut ffi_size = buffer_size as c_ulong;
-        self.device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE as c_ulong, &mut ffi_size)
+        set_buffer_size(&self.device, buffer_size)
     }
 
     pub fn get_system_time_counter(&self, num: u32) -> DeviceResult<SystemTimeCounter> {
@@ -172,4 +166,28 @@ pub mod flags {
             const PesImmediateStart = ffi::DMX_IMMEDIATE_START
         }
     }
+}
+
+pub struct Dvr {
+    device: DeviceFileDescriptor
+}
+
+impl Dvr {
+    pub fn open(file: &Path, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Dvr> {
+        let device = try!(DeviceFileDescriptor::open(file, rw_mode, block_mode));
+        Ok(Dvr { device: device })
+    }
+
+    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+        self.device.write(buffer)
+    }
+
+    pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
+        set_buffer_size(&self.device, buffer_size)
+    }
+}
+
+fn set_buffer_size(device: &DeviceFileDescriptor, buffer_size: u32) -> DeviceResult<()> {
+    let mut ffi_size = buffer_size as c_ulong;
+    device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE as c_ulong, &mut ffi_size)
 }

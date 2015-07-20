@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Relevant file in Linux kernel code: drivers/media/dvb-core/dmxdev.c
+// For some starting points, see functions dvb_demux_do_ioctl, dvb_dvr_do_ioctl,
+// and structs dvb_demux_fops, dvb_dvr_fops.
+
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::ffi::CString;
 use std::borrow::Borrow;
 use std::path::Path;
 
-use libc::{c_ulong,c_int};
-use libc::{open,close};
+use libc::{c_ulong,c_int,size_t,c_void};
+use libc::{open,close,read,write};
 use libc::{O_RDONLY,O_RDWR,O_NONBLOCK};
 
 use errno::errno;
@@ -117,6 +121,30 @@ impl DeviceFileDescriptor {
         };
         //println!("[DEBUG] ioctl(fd: {}, request: {}, argument: [size {} bytes]) -> {}", fd, request, size_of::<T>(), result);
         make_result(result)
+    }
+
+    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+        let result = unsafe {
+            let ptr = buffer.as_mut_ptr() as *mut c_void;
+            read(self.fd, ptr, buffer.len() as size_t)
+        };
+        if result == -1 {
+            Err(DeviceError::new())
+        } else {
+            Ok(result as isize)
+        }
+    }
+
+    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+        let result = unsafe {
+            let ptr = buffer.as_mut_ptr() as *const c_void;
+            write(self.fd, ptr, buffer.len() as size_t)
+        };
+        if result == -1 {
+            Err(DeviceError::new())
+        } else {
+            Ok(result as isize)
+        }
     }
 }
 
