@@ -208,12 +208,12 @@ static PROPERTIES: &'static [PropertyType] = &[
     ("DTV_VOLTAGE", "Voltage"),
 ];
 
-pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>, ffi_mod: &str) {
+pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>) {
     writeln!(f, "impl FromProperty for {} {{", enum_name).unwrap();
     writeln!(f, "    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
     writeln!(f, "        match ffi_property_data(property) {{").unwrap();
     for variant in variants {
-        writeln!(f, "            {}::{} => Ok({}::{}),", ffi_mod, variant.ffi_name, enum_name, variant.formatted).unwrap();
+        writeln!(f, "            {}::{} => Ok({}::{}),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
     }
     writeln!(f, "            value => Err(PropertyMappingError::UnrecognizedValue(value))").unwrap();
     writeln!(f, "        }}").unwrap();
@@ -270,11 +270,11 @@ fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, v
     writeln!(f, "}}").unwrap();
 }
 
-fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str, variant_formatter: Option<&StringFormatter>) {
+fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], variant_formatter: Option<&StringFormatter>) {
     let variant_info = make_variant_info(variants, variant_formatter);
     make_simple_enum(f, enum_name, &variant_info);
-    make_simple_into(f, enum_name, &variant_info, ffi_mod);
-    make_simple_from_property(f, enum_name, &variant_info, ffi_mod);
+    make_simple_into(f, enum_name, &variant_info, FFI_MOD);
+    make_simple_from_property(f, enum_name, &variant_info);
 }
 
 fn make_property_enums(f: &mut File) {
@@ -320,14 +320,14 @@ pub fn generate() {
         "APSK_32",
         "DQPSK",
         "QAM_4_NR",
-    ], FFI_MOD, None);
+    ], None);
 
     // fe_spectral_inversion ->
     make_enum(&mut f, "SpectralInversion", &[
         "INVERSION_OFF",
         "INVERSION_ON",
         "INVERSION_AUTO",
-    ], FFI_MOD, None);
+    ], None);
 
     //fe_code_rate ->
     make_enum(&mut f, "CodeRate", &[
@@ -344,21 +344,21 @@ pub fn generate() {
         "FEC_9_10",
         "FEC_2_5",
         "FEC_3_5",
-    ], FFI_MOD, Some(&fix_fec));
+    ], Some(&fix_fec));
 
     // fe_sec_voltage ->
     make_enum(&mut f, "Voltage", &[
         "SEC_VOLTAGE_13",
         "SEC_VOLTAGE_18",
         "SEC_VOLTAGE_OFF",
-    ], FFI_MOD, None);
+    ], None);
 
     // fe_pilot_t ->
     make_enum(&mut f, "Pilot", &[
         "PILOT_ON",
         "PILOT_OFF",
         "PILOT_AUTO",
-    ], FFI_MOD, None);
+    ], None);
 
     // fe_rolloff_t ->
     make_enum(&mut f, "Rolloff", &[
@@ -366,7 +366,7 @@ pub fn generate() {
         "ROLLOFF_20",
         "ROLLOFF_25",
         "ROLLOFF_AUTO",
-    ], FFI_MOD, None);
+    ], None);
 
     // fe_delivery_system_t ->
     make_enum(&mut f, "DeliverySystem", &[
@@ -389,7 +389,7 @@ pub fn generate() {
         "SYS_DVBT2",
         "SYS_TURBO",
         "SYS_DVBC_ANNEX_C",
-    ], FFI_MOD, None);
+    ], None);
 
     // fe_code_rate ->
     make_enum(&mut f, "IsdbtCodeRate", &[
@@ -399,7 +399,7 @@ pub fn generate() {
         "FEC_3_4",
         "FEC_5_6",
         "FEC_7_8",
-    ], FFI_MOD, Some(&fix_fec));
+    ], Some(&fix_fec));
 
     // ->
     make_enum(&mut f, "IsdbtModulation", &[
@@ -408,38 +408,38 @@ pub fn generate() {
         "QAM_16",
         "QAM_64",
         "DQPSK",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_atscmh_rs_frame_mode ->
     make_enum(&mut f, "AtscmhRsFrameMode", &[
         "ATSCMH_RSFRAME_PRI_ONLY",
         "ATSCMH_RSFRAME_PRI_SEC",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_atscmh_rs_frame_ensemble ->
     make_enum(&mut f, "AtscmhRsFrameEnsemble", &[
         "ATSCMH_RSFRAME_ENS_PRI",
         "ATSCMH_RSFRAME_ENS_SEC",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_atscmh_rs_code_mode ->
     make_enum(&mut f, "AtscmhRsCodeMode", &[
         "ATSCMH_RSCODE_211_187",
         "ATSCMH_RSCODE_223_187",
         "ATSCMH_RSCODE_235_187",
-    ], FFI_MOD, Some(&fix_rscode));
+    ], Some(&fix_rscode));
 
     // Enum_atscmh_sccc_block_mode ->
     make_enum(&mut f, "AtscmhScccBlockMode", &[
         "ATSCMH_SCCC_BLK_SEP",
         "ATSCMH_SCCC_BLK_COMB",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_atscmh_sccc_code_mode ->
     make_enum(&mut f, "AtscmhScccCodeMode", &[
         "ATSCMH_SCCC_CODE_HLF",
         "ATSCMH_SCCC_CODE_QTR",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_fe_transmit_mode ->
     make_enum(&mut f, "TransmitMode", &[
@@ -452,7 +452,7 @@ pub fn generate() {
         "TRANSMISSION_MODE_32K",
         "TRANSMISSION_MODE_C1",
         "TRANSMISSION_MODE_C3780",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_fe_guard_interval ->
     make_enum(&mut f, "GuardInterval", &[
@@ -467,7 +467,7 @@ pub fn generate() {
         "GUARD_INTERVAL_PN420",
         "GUARD_INTERVAL_PN595",
         "GUARD_INTERVAL_PN945",
-    ], FFI_MOD, Some(&fix_gi));
+    ], Some(&fix_gi));
 
     // Enum_fe_hierarchy ->
     make_enum(&mut f, "Hierarchy", &[
@@ -476,7 +476,7 @@ pub fn generate() {
         "HIERARCHY_2",
         "HIERARCHY_4",
         "HIERARCHY_AUTO",
-    ], FFI_MOD, None);
+    ], None);
 
     // Enum_fe_interleaving ->
     make_enum(&mut f, "Interleaving", &[
@@ -484,7 +484,7 @@ pub fn generate() {
         "INTERLEAVING_AUTO",
         "INTERLEAVING_240",
         "INTERLEAVING_720",
-    ], FFI_MOD, None);
+    ], None);
 
     make_property_enums(&mut f);
 }

@@ -20,10 +20,10 @@ use super::common::*;
 
 static FFI_MOD: &'static str = "ffi";
 
-fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str) {
+fn make_enum(f: &mut File, enum_name: &str, variants: &[&str]) {
     let variant_info = make_variant_info(variants, None);
     make_simple_enum(f, enum_name, &variant_info);
-    make_simple_into(f, enum_name, &variant_info, ffi_mod);
+    make_simple_into(f, enum_name, &variant_info, FFI_MOD);
 }
 
 pub fn generate() {
@@ -34,14 +34,14 @@ pub fn generate() {
     make_enum(&mut f, "Input", &[
         "DMX_IN_FRONTEND",
         "DMX_IN_DVR"
-    ], FFI_MOD);
+    ]);
 
     make_enum(&mut f, "Output", &[
         "DMX_OUT_DECODER",
         "DMX_OUT_TAP",
         "DMX_OUT_TS_TAP",
         "DMX_OUT_TSDEMUX_TAP"
-    ], FFI_MOD);
+    ]);
 
     make_enum(&mut f, "DemuxSource", &[
         "DMX_SOURCE_FRONT0",
@@ -52,7 +52,7 @@ pub fn generate() {
         "DMX_SOURCE_DVR1",
         "DMX_SOURCE_DVR2",
         "DMX_SOURCE_DVR3"
-    ], FFI_MOD);
+    ]);
 
     make_enum(&mut f, "PesType", &[
         "DMX_PES_AUDIO0",
@@ -76,5 +76,5 @@ pub fn generate() {
         "DMX_PES_SUBTITLE3",
         "DMX_PES_PCR3",
         "DMX_PES_OTHER"
-    ], FFI_MOD);
+    ]);
 }
