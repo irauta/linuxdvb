@@ -226,6 +226,7 @@ fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &Vec<Varian
     writeln!(f, "pub enum {} {{", enum_name).unwrap();
     for variant in variants {
         let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
+        writeln!(f, "    /// {}", variant.ffi_name).unwrap();
         // There's no point in having a "value enum" when there's no type => no value to be carried
         if !variant_info.1.is_empty() {
             writeln!(f, "    {}({}),", variant.formatted, variant_info.1).unwrap();
