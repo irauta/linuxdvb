@@ -12,10 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+extern crate regex;
+
 use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use self::regex::Regex;
 
 use super::common::*;
 
@@ -205,13 +208,12 @@ static PROPERTIES: &'static [PropertyType] = &[
     ("DTV_VOLTAGE", "Voltage"),
 ];
 
-pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str) {
+pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>, ffi_mod: &str) {
     writeln!(f, "impl FromProperty for {} {{", enum_name).unwrap();
     writeln!(f, "    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
     writeln!(f, "        match ffi_property_data(property) {{").unwrap();
-    for ffi_name in variants {
-        let name = pascal_case(ffi_name);
-        writeln!(f, "            {}::{} => Ok({}::{}),", ffi_mod, ffi_name, enum_name, name).unwrap();
+    for variant in variants {
+        writeln!(f, "            {}::{} => Ok({}::{}),", ffi_mod, variant.ffi_name, enum_name, variant.formatted).unwrap();
     }
     writeln!(f, "            value => Err(PropertyMappingError::UnrecognizedValue(value))").unwrap();
     writeln!(f, "        }}").unwrap();
@@ -219,32 +221,30 @@ pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &[&str
     writeln!(f, "}}").unwrap();
 }
 
-fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &[&str], types: &[PropertyType], include_empty: bool) {
+fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType], include_empty: bool) {
     writeln!(f, "#[derive(Copy,Clone,Debug)]").unwrap();
     writeln!(f, "pub enum {} {{", enum_name).unwrap();
-    for ffi_name in variants {
-        let variant_info = types.iter().find(|t| &t.0 == ffi_name).unwrap();
-        let name = pascal_case(ffi_name);
+    for variant in variants {
+        let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
         // There's no point in having a "value enum" when there's no type => no value to be carried
         if !variant_info.1.is_empty() {
-            writeln!(f, "    {}({}),", name, variant_info.1).unwrap();
+            writeln!(f, "    {}({}),", variant.formatted, variant_info.1).unwrap();
         } else if include_empty {
-            writeln!(f, "    {},", name).unwrap();
+            writeln!(f, "    {},", variant.formatted).unwrap();
         }
     }
     writeln!(f, "}}").unwrap();
 }
 
-fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
+fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType]) {
     writeln!(f, "pub fn {}(property: ffi::Struct_dtv_property) -> PropertyMappingResult<{}> {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match property.cmd {{").unwrap();
-    for ffi_name in variants {
-        let variant_info = types.iter().find(|t| &t.0 == ffi_name).unwrap();
-        let name = pascal_case(ffi_name);
+    for variant in variants {
+        let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
         if variant_info.1.is_empty() {
-            writeln!(f, "        {}::{} => Ok({}::{}),", FFI_MOD, ffi_name, enum_name, name).unwrap();
+            writeln!(f, "        {}::{} => Ok({}::{}),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
         } else {
-            writeln!(f, "        {}::{} => FromProperty::from_property(property).map(|p| {}::{}(p)),", FFI_MOD, ffi_name, enum_name, name).unwrap();
+            writeln!(f, "        {}::{} => FromProperty::from_property(property).map(|p| {}::{}(p)),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
         }
     }
     writeln!(f, "        value => Err(PropertyMappingError::UnrecognizedValue(value))").unwrap();
@@ -252,38 +252,40 @@ fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, v
     writeln!(f, "}}").unwrap();
 }
 
-fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &[&str], types: &[PropertyType]) {
+fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType]) {
     writeln!(f, "pub fn {}(property: &{}) -> ffi::Struct_dtv_property {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match *property {{").unwrap();
-    for ffi_name in variants {
-        let variant_info = types.iter().find(|t| &t.0 == ffi_name).unwrap();
-        let name = pascal_case(ffi_name);
+    for variant in variants {
+        let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
         if variant_info.1.is_empty() {
-            writeln!(f, "        {}::{} => make_ffi_property({}::{}, 0),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+            writeln!(f, "        {}::{} => make_ffi_property({}::{}, 0),", enum_name, variant.formatted, FFI_MOD, variant.ffi_name).unwrap();
         } else if variant_info.1 == "i32" {
-            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value as u32),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value as u32),", enum_name, variant.formatted, FFI_MOD, variant.ffi_name).unwrap();
         } else {
-            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value.into()),", enum_name, name, FFI_MOD, ffi_name).unwrap();
+            writeln!(f, "        {}::{}(value) => make_ffi_property({}::{}, value.into()),", enum_name, variant.formatted, FFI_MOD, variant.ffi_name).unwrap();
         }
     }
     writeln!(f, "    }}").unwrap();
     writeln!(f, "}}").unwrap();
 }
 
-fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str) {
-    make_simple_enum(f, enum_name, variants);
-    make_simple_into(f, enum_name, variants, ffi_mod);
-    make_simple_from_property(f, enum_name, variants, ffi_mod);
+fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str, variant_formatter: Option<&StringFormatter>) {
+    let variant_info = make_variant_info(variants, variant_formatter);
+    make_simple_enum(f, enum_name, &variant_info);
+    make_simple_into(f, enum_name, &variant_info, ffi_mod);
+    make_simple_from_property(f, enum_name, &variant_info, ffi_mod);
 }
 
 fn make_property_enums(f: &mut File) {
-    make_simple_enum(f, "GetProperty", GET_PROPERTIES);
-    make_simple_into(f, "GetProperty", GET_PROPERTIES, FFI_MOD);
+    let get_variant_info = make_variant_info(GET_PROPERTIES, None);
+    make_simple_enum(f, "GetProperty", &get_variant_info);
+    make_simple_into(f, "GetProperty", &get_variant_info, FFI_MOD);
 
-    make_property_value_enum(f, "GetPropertyValue", GET_PROPERTIES, PROPERTIES, false);
-    make_property_value_getter_fn(f, "get_property_value", "GetPropertyValue", GET_PROPERTIES, PROPERTIES);
-    make_property_value_enum(f, "SetPropertyValue", SET_PROPERTIES, PROPERTIES, true);
-    make_property_value_setter_fn(f, "set_property_value", "SetPropertyValue", SET_PROPERTIES, PROPERTIES);
+    let set_variant_info = make_variant_info(SET_PROPERTIES, None);
+    make_property_value_enum(f, "GetPropertyValue", &get_variant_info, PROPERTIES, false);
+    make_property_value_getter_fn(f, "get_property_value", "GetPropertyValue", &get_variant_info, PROPERTIES);
+    make_property_value_enum(f, "SetPropertyValue", &set_variant_info, PROPERTIES, true);
+    make_property_value_setter_fn(f, "set_property_value", "SetPropertyValue", &set_variant_info, PROPERTIES);
 }
 
 pub fn generate() {
@@ -292,6 +294,14 @@ pub fn generate() {
     let mut f = File::create(&dest_path).unwrap();
 
     f.write(include_bytes!("frontend-non-generated.rs")).unwrap();
+
+    let re = Regex::new(r"(\d+)_(\d+)").unwrap();
+    let fec_re = re.clone();
+    let rscode_re = re.clone();
+    let gi_re = re.clone();
+    let fix_fec = move |name: String| fec_re.replace_all(&name, "K$1_N$2");
+    let fix_rscode = move |name: String| rscode_re.replace_all(&name, "N$1_K$2");
+    let fix_gi = move |name: String| gi_re.replace_all(&name, "D$1_TU$2");
 
     // fe_modulation ->
     make_enum(&mut f, "Modulation", &[
@@ -309,14 +319,14 @@ pub fn generate() {
         "APSK_32",
         "DQPSK",
         "QAM_4_NR",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // fe_spectral_inversion ->
     make_enum(&mut f, "SpectralInversion", &[
         "INVERSION_OFF",
         "INVERSION_ON",
         "INVERSION_AUTO",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     //fe_code_rate ->
     make_enum(&mut f, "CodeRate", &[
@@ -333,21 +343,21 @@ pub fn generate() {
         "FEC_9_10",
         "FEC_2_5",
         "FEC_3_5",
-    ], FFI_MOD);
+    ], FFI_MOD, Some(&fix_fec));
 
     // fe_sec_voltage ->
     make_enum(&mut f, "Voltage", &[
         "SEC_VOLTAGE_13",
         "SEC_VOLTAGE_18",
         "SEC_VOLTAGE_OFF",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // fe_pilot_t ->
     make_enum(&mut f, "Pilot", &[
         "PILOT_ON",
         "PILOT_OFF",
         "PILOT_AUTO",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // fe_rolloff_t ->
     make_enum(&mut f, "Rolloff", &[
@@ -355,7 +365,7 @@ pub fn generate() {
         "ROLLOFF_20",
         "ROLLOFF_25",
         "ROLLOFF_AUTO",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // fe_delivery_system_t ->
     make_enum(&mut f, "DeliverySystem", &[
@@ -378,7 +388,7 @@ pub fn generate() {
         "SYS_DVBT2",
         "SYS_TURBO",
         "SYS_DVBC_ANNEX_C",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // fe_code_rate ->
     make_enum(&mut f, "IsdbtCodeRate", &[
@@ -388,7 +398,7 @@ pub fn generate() {
         "FEC_3_4",
         "FEC_5_6",
         "FEC_7_8",
-    ], FFI_MOD);
+    ], FFI_MOD, Some(&fix_fec));
 
     // ->
     make_enum(&mut f, "IsdbtModulation", &[
@@ -397,38 +407,38 @@ pub fn generate() {
         "QAM_16",
         "QAM_64",
         "DQPSK",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_atscmh_rs_frame_mode ->
     make_enum(&mut f, "AtscmhRsFrameMode", &[
         "ATSCMH_RSFRAME_PRI_ONLY",
         "ATSCMH_RSFRAME_PRI_SEC",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_atscmh_rs_frame_ensemble ->
     make_enum(&mut f, "AtscmhRsFrameEnsemble", &[
         "ATSCMH_RSFRAME_ENS_PRI",
         "ATSCMH_RSFRAME_ENS_SEC",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_atscmh_rs_code_mode ->
     make_enum(&mut f, "AtscmhRsCodeMode", &[
         "ATSCMH_RSCODE_211_187",
         "ATSCMH_RSCODE_223_187",
         "ATSCMH_RSCODE_235_187",
-    ], FFI_MOD);
+    ], FFI_MOD, Some(&fix_rscode));
 
     // Enum_atscmh_sccc_block_mode ->
     make_enum(&mut f, "AtscmhScccBlockMode", &[
         "ATSCMH_SCCC_BLK_SEP",
         "ATSCMH_SCCC_BLK_COMB",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_atscmh_sccc_code_mode ->
     make_enum(&mut f, "AtscmhScccCodeMode", &[
         "ATSCMH_SCCC_CODE_HLF",
         "ATSCMH_SCCC_CODE_QTR",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_fe_transmit_mode ->
     make_enum(&mut f, "TransmitMode", &[
@@ -441,7 +451,7 @@ pub fn generate() {
         "TRANSMISSION_MODE_32K",
         "TRANSMISSION_MODE_C1",
         "TRANSMISSION_MODE_C3780",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_fe_guard_interval ->
     make_enum(&mut f, "GuardInterval", &[
@@ -456,7 +466,7 @@ pub fn generate() {
         "GUARD_INTERVAL_PN420",
         "GUARD_INTERVAL_PN595",
         "GUARD_INTERVAL_PN945",
-    ], FFI_MOD);
+    ], FFI_MOD, Some(&fix_gi));
 
     // Enum_fe_hierarchy ->
     make_enum(&mut f, "Hierarchy", &[
@@ -465,7 +475,7 @@ pub fn generate() {
         "HIERARCHY_2",
         "HIERARCHY_4",
         "HIERARCHY_AUTO",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     // Enum_fe_interleaving ->
     make_enum(&mut f, "Interleaving", &[
@@ -473,7 +483,7 @@ pub fn generate() {
         "INTERLEAVING_AUTO",
         "INTERLEAVING_240",
         "INTERLEAVING_720",
-    ], FFI_MOD);
+    ], FFI_MOD, None);
 
     make_property_enums(&mut f);
 }

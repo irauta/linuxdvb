@@ -21,8 +21,9 @@ use super::common::*;
 static FFI_MOD: &'static str = "ffi";
 
 fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], ffi_mod: &str) {
-    make_simple_enum(f, enum_name, variants);
-    make_simple_into(f, enum_name, variants, ffi_mod);
+    let variant_info = make_variant_info(variants, None);
+    make_simple_enum(f, enum_name, &variant_info);
+    make_simple_into(f, enum_name, &variant_info, ffi_mod);
 }
 
 pub fn generate() {
