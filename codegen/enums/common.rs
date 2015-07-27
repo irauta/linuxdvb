@@ -54,7 +54,7 @@ pub fn make_simple_into(f: &mut File, enum_name: &str, variants: &Vec<VariantInf
 }
 
 pub fn make_simple_enum(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>) {
-    writeln!(f, "#[derive(Copy,Clone,Debug)]").unwrap();
+    writeln!(f, "#[derive(Copy,Clone,Debug,PartialEq)]").unwrap();
     writeln!(f, "pub enum {} {{", enum_name).unwrap();
     for variant in variants {
         writeln!(f, "    /// {}", variant.ffi_name).unwrap();

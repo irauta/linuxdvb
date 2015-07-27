@@ -222,7 +222,7 @@ pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<V
 }
 
 fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType], include_empty: bool) {
-    writeln!(f, "#[derive(Copy,Clone,Debug)]").unwrap();
+    writeln!(f, "#[derive(Copy,Clone,Debug,PartialEq)]").unwrap();
     writeln!(f, "pub enum {} {{", enum_name).unwrap();
     for variant in variants {
         let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
@@ -270,11 +270,39 @@ fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, v
     writeln!(f, "}}").unwrap();
 }
 
+fn make_property_from_str_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType]) {
+    writeln!(f, "pub fn {}(property: &str, parameter: &str) -> PropertyValueResult<{}> {{", fn_name, enum_name).unwrap();
+    writeln!(f, "    match property {{").unwrap();
+    for variant in variants {
+        let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
+        if !variant_info.1.is_empty() {
+            writeln!(f, "        \"{}\" => Ok({}::{}(try!(IntoPropertyValue::into_property_value(parameter)))),", variant.formatted, enum_name, variant.formatted).unwrap();
+        }
+    }
+    writeln!(f, "        _ => Err(PropertyValueError::UnrecognizedProperty)").unwrap();
+    writeln!(f, "    }}").unwrap();
+    writeln!(f, "}}").unwrap();
+}
+
+fn make_into_property_value(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>) {
+    writeln!(f, "impl IntoPropertyValue for {} {{", enum_name).unwrap();
+    writeln!(f, "    fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {{").unwrap();
+    writeln!(f, "        match value_str {{").unwrap();
+    for variant in variants {
+        writeln!(f, "            \"{}\" => Ok({}::{}),", variant.formatted, enum_name, variant.formatted).unwrap();
+    }
+    writeln!(f, "            _ => Err(PropertyValueError::UnrecognizedValue)").unwrap();
+    writeln!(f, "        }}").unwrap();
+    writeln!(f, "    }}").unwrap();
+    writeln!(f, "}}").unwrap();
+}
+
 fn make_enum(f: &mut File, enum_name: &str, variants: &[&str], variant_formatter: Option<&StringFormatter>) {
     let variant_info = make_variant_info(variants, variant_formatter);
     make_simple_enum(f, enum_name, &variant_info);
     make_simple_into(f, enum_name, &variant_info, FFI_MOD);
     make_simple_from_property(f, enum_name, &variant_info);
+    make_into_property_value(f, enum_name, &variant_info);
 }
 
 fn make_property_enums(f: &mut File) {
@@ -287,6 +315,7 @@ fn make_property_enums(f: &mut File) {
     make_property_value_getter_fn(f, "get_property_value", "GetPropertyValue", &get_variant_info, PROPERTIES);
     make_property_value_enum(f, "SetPropertyValue", &set_variant_info, PROPERTIES, true);
     make_property_value_setter_fn(f, "set_property_value", "SetPropertyValue", &set_variant_info, PROPERTIES);
+    make_property_from_str_fn(f, "make_set_property_value", "SetPropertyValue", &set_variant_info, PROPERTIES);
 }
 
 pub fn generate() {

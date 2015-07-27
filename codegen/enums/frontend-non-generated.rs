@@ -14,6 +14,7 @@
 
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
+use std::num::ParseIntError;
 #[derive(Copy,Clone,Debug)]
 pub enum PropertyMappingError {
     UnrecognizedValue(u32),
@@ -54,6 +55,45 @@ impl FromProperty for i32 {
         Ok(uvalue as i32)
     }
 }
+#[derive(Clone,Debug)]
+pub enum PropertyValueError {
+    ParseIntError(ParseIntError),
+    UnrecognizedValue,
+    UnrecognizedProperty
+}
+impl Error for PropertyValueError {
+    fn description(&self) -> &str {
+        match *self {
+            PropertyValueError::UnrecognizedProperty => "Unrecognized property",
+            PropertyValueError::UnrecognizedValue => "Unrecognized property value",
+            PropertyValueError::ParseIntError(ref error) => Error::description(error)
+        }
+    }
+}
+impl Display for PropertyValueError {
+    fn fmt(&self, f: &mut Formatter) -> fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+impl From<ParseIntError> for PropertyValueError {
+    fn from(err: ParseIntError) -> PropertyValueError {
+        PropertyValueError::ParseIntError(err)
+    }
+}
+pub type PropertyValueResult<T> = Result<T, PropertyValueError>;
+pub trait IntoPropertyValue {
+    fn into_property_value(value_str: &str) -> PropertyValueResult<Self>;
+}
+impl IntoPropertyValue for u32 {
+    fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
+        u32::from_str_radix(value_str, 10).map_err(PropertyValueError::ParseIntError)
+    }
+}
+impl IntoPropertyValue for i32 {
+    fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
+        i32::from_str_radix(value_str, 10).map_err(PropertyValueError::ParseIntError)
+    }
+}
 fn ffi_property_data(property: ffi::Struct_dtv_property) -> u32 {
     unsafe {
         let mut property = property;
@@ -68,7 +108,7 @@ fn make_ffi_property(cmd: u32, value: u32) -> ffi::Struct_dtv_property {
     p
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,PartialEq)]
 pub enum Lna {
     LnaOff,
     LnaOn,
@@ -94,8 +134,18 @@ impl FromProperty for Lna {
         }
     }
 }
+impl IntoPropertyValue for Lna {
+    fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
+        match value_str {
+            "LnaOff" => Ok(Lna::LnaOff),
+            "LnaOn" => Ok(Lna::LnaOn),
+            "LnaAuto" => Ok(Lna::LnaAuto),
+            _ => Err(PropertyValueError::UnrecognizedValue)
+        }
+    }
+}
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,PartialEq)]
 pub enum StatValue {
     ScaleNotAvailable,
     Counter(u64),
@@ -103,7 +153,7 @@ pub enum StatValue {
     Relative(u64),
 }
 const STAT_COUNT: usize = 4;
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,PartialEq)]
 pub struct Stat {
     len: u8,
     stats: [StatValue; STAT_COUNT]
@@ -141,7 +191,7 @@ impl FromProperty for Stat {
 }
 
 const BUFFER_SIZE: usize = 32;
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,PartialEq)]
 pub struct SupportedDeliverySystems {
     len: u32,
     delsys: [DeliverySystem; BUFFER_SIZE]
@@ -170,7 +220,7 @@ impl FromProperty for SupportedDeliverySystems {
     }
 }
 
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,PartialEq)]
 pub struct ApiVersion {
     pub major: u8,
     pub minor: u8
@@ -190,4 +240,10 @@ fn ffi_property_generation() {
     assert_eq!(property.cmd, 123);
     let data = unsafe { *property.u.data() };
     assert_eq!(data, 456);
+}
+
+#[test]
+fn str_to_property() {
+    let property = make_set_property_value("DtvModulation", "Qam128").unwrap();
+    assert_eq!(property, SetPropertyValue::DtvModulation(Modulation::Qam128));
 }
