@@ -15,6 +15,8 @@
 use std::error::Error;
 use std::fmt::{self,Display,Formatter};
 use std::num::ParseIntError;
+
+
 #[derive(Copy,Clone,Debug)]
 pub enum PropertyMappingError {
     UnrecognizedValue(u32),
@@ -22,6 +24,7 @@ pub enum PropertyMappingError {
     StatError,
     BufferError
 }
+
 impl Error for PropertyMappingError {
     fn description(&self) -> &str {
         match *self {
@@ -32,15 +35,21 @@ impl Error for PropertyMappingError {
         }
     }
 }
+
 impl Display for PropertyMappingError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
     }
 }
+
+
 pub type PropertyMappingResult<T> = Result<T, PropertyMappingError>;
+
+
 pub trait FromProperty {
     fn from_property(ffi::Struct_dtv_property) -> PropertyMappingResult<Self>;
 }
+
 impl FromProperty for u32 {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
@@ -48,6 +57,7 @@ impl FromProperty for u32 {
         Ok(value)
     }
 }
+
 impl FromProperty for i32 {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
@@ -55,12 +65,15 @@ impl FromProperty for i32 {
         Ok(uvalue as i32)
     }
 }
+
+
 #[derive(Clone,Debug)]
 pub enum PropertyValueError {
     ParseIntError(ParseIntError),
     UnrecognizedValue,
     UnrecognizedProperty
 }
+
 impl Error for PropertyValueError {
     fn description(&self) -> &str {
         match *self {
@@ -70,36 +83,47 @@ impl Error for PropertyValueError {
         }
     }
 }
+
 impl Display for PropertyValueError {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
         write!(f, "{:?}", self)
     }
 }
+
 impl From<ParseIntError> for PropertyValueError {
     fn from(err: ParseIntError) -> PropertyValueError {
         PropertyValueError::ParseIntError(err)
     }
 }
+
+
 pub type PropertyValueResult<T> = Result<T, PropertyValueError>;
+
+
 pub trait IntoPropertyValue {
     fn into_property_value(value_str: &str) -> PropertyValueResult<Self>;
 }
+
 impl IntoPropertyValue for u32 {
     fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
         u32::from_str_radix(value_str, 10).map_err(PropertyValueError::ParseIntError)
     }
 }
+
 impl IntoPropertyValue for i32 {
     fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
         i32::from_str_radix(value_str, 10).map_err(PropertyValueError::ParseIntError)
     }
 }
+
+
 fn ffi_property_data(property: ffi::Struct_dtv_property) -> u32 {
     unsafe {
         let mut property = property;
         *property.u.data()
     }
 }
+
 fn make_ffi_property(cmd: u32, value: u32) -> ffi::Struct_dtv_property {
     let mut p = ffi::Struct_dtv_property { cmd: cmd, ..Default::default() };
     unsafe {
@@ -108,12 +132,14 @@ fn make_ffi_property(cmd: u32, value: u32) -> ffi::Struct_dtv_property {
     p
 }
 
+
 #[derive(Copy,Clone,Debug,PartialEq)]
 pub enum Lna {
     LnaOff,
     LnaOn,
     LnaAuto,
 }
+
 impl Into<u32> for Lna {
     fn into(self) -> u32 {
         match self {
@@ -124,6 +150,7 @@ impl Into<u32> for Lna {
         }
     }
 }
+
 impl FromProperty for Lna {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         match ffi_property_data(property) {
@@ -134,6 +161,7 @@ impl FromProperty for Lna {
         }
     }
 }
+
 impl IntoPropertyValue for Lna {
     fn into_property_value(value_str: &str) -> PropertyValueResult<Self> {
         match value_str {
@@ -145,6 +173,7 @@ impl IntoPropertyValue for Lna {
     }
 }
 
+
 #[derive(Copy,Clone,Debug,PartialEq)]
 pub enum StatValue {
     ScaleNotAvailable,
@@ -152,17 +181,21 @@ pub enum StatValue {
     Decibel(i64),
     Relative(u64),
 }
+
 const STAT_COUNT: usize = 4;
+
 #[derive(Copy,Clone,Debug,PartialEq)]
 pub struct Stat {
     len: u8,
     stats: [StatValue; STAT_COUNT]
 }
+
 impl Stat {
     pub fn stats(&self) -> &[StatValue] {
         &self.stats[0..self.len as usize]
     }
 }
+
 impl FromProperty for Stat {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let (len, ffi_stats) = unsafe {
@@ -190,17 +223,21 @@ impl FromProperty for Stat {
     }
 }
 
+
 const BUFFER_SIZE: usize = 32;
+
 #[derive(Copy,Clone,Debug,PartialEq)]
 pub struct SupportedDeliverySystems {
     len: u32,
     delsys: [DeliverySystem; BUFFER_SIZE]
 }
+
 impl SupportedDeliverySystems {
     pub fn delivery_systems(&self) -> &[DeliverySystem] {
         &self.delsys[0..self.len as usize]
     }
 }
+
 impl FromProperty for SupportedDeliverySystems {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let (len, buffer) = unsafe {
@@ -220,11 +257,13 @@ impl FromProperty for SupportedDeliverySystems {
     }
 }
 
+
 #[derive(Copy,Clone,Debug,PartialEq)]
 pub struct ApiVersion {
     pub major: u8,
     pub minor: u8
 }
+
 impl FromProperty for ApiVersion {
     fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let data = ffi_property_data(property);
@@ -233,6 +272,7 @@ impl FromProperty for ApiVersion {
         Ok(ApiVersion { major: major as u8, minor: minor as u8 })
     }
 }
+
 
 #[test]
 fn ffi_property_generation() {
