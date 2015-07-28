@@ -2,7 +2,7 @@
 
 This library wraps the kernel interfaces directly, and currently doesn't try to do much more than be relatively thin but still safe wrapper for /dev/dvb devices.
 
-The primary objectives for this library is to get frontend and demux devices working. CA support and DVB network support are secondary at the moment, but as the APIs seem relatively simple to wrap in a similar way than the frontend API, they probably can eventually be added too. There's no intention to support the deprecated video and audio device APIs. Deprecated parts of the API are left out from other parts too.
+The primary objectives for this library is to get frontend and demux devices working. CA support and DVB network support are secondary at the moment, but as the APIs seem relatively simple to wrap in a similar way than the frontend and demux APIs, they probably can eventually be added too. There's no intention to support the deprecated video and audio device APIs. Deprecated parts of the API are left out from other parts too.
 
 ## Code generation
 
@@ -14,9 +14,11 @@ The bindgen codegen is implmented/documented as a bash script that does some nas
 
 ### Higher level codegen
 
-Under the codegen directory there's also properties subdirectory, that has a build script which generates a bunch of enums. Rust-bindgen generates only the bare necessities for FFI (and that's pretty much its job, not more), so the constants are combined into enums and helpers to convert them to the integer equivalents and back. Even though the raw generator code lines/generated code lines ratio is not very good, the generator code is mostly just lists of constant names that in some cases expand to several lists (the enum and match statements for the enum). I believe this approach has less tedious, repetitive coding and therefore less chances for causing subtle copy-paste-bugs.
+Under the codegen directory there's also enums subdirectory, that has a build script which generates a bunch of enums. Rust-bindgen generates only the bare necessities for FFI (and that's pretty much its job, not more), so the constants are combined into enums and helpers to convert them to the integer equivalents and back. Even though the raw generator code lines/generated code lines ratio is not very good, the generator code is mostly just lists of constant names that in some cases expand to several lists (the enum and match statements for the enum). I believe this approach has less tedious, repetitive coding and therefore less chances for causing subtle copy-paste-bugs.
 
 The high-level codegen is centered around the frontend properties, implemented as enums in the Rust code. The API takes a list of property names or name+value pairs and either returns the values (as a Vec) or sets the properties, respectively. While the V4L API isn't completely explicit about this, in practice some of the properties are essentially read-only, meaning there's no meaningful way of setting the said properties. The most obvious example of these are the statistics properties that can be read but not set. This library exposes only the gettable and settable properties that are actually gettable or settable. The list of those properties are figured out by looking into the kernel code. (See dtv_property_process_get and dtv_property_process_set in dvb_frontend.c to see the properties.) This is risky in a sense, but here too I believe, as was with the header files, that the API is quite stable at this point, so this doesn't seem to be too bad of a choice.
+
+As the code has evolved, the code generation is used for Demux device related enums too. At the same time, the codegen has been modularized into frontend-specific, demux-specific and common parts. However, the frontend properties are still definitely the most complex part of the codegen.
 
 # Documentation
 
