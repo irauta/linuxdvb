@@ -51,6 +51,7 @@ pub trait FromProperty {
 }
 
 impl FromProperty for u32 {
+    #[allow(unused_variables)]
     fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
         let value: u32 = unsafe { *(property.u.data()) };
@@ -59,6 +60,7 @@ impl FromProperty for u32 {
 }
 
 impl FromProperty for i32 {
+    #[allow(unused_variables)]
     fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
         let uvalue: u32 = unsafe { *(property.u.data()) };
@@ -265,6 +267,7 @@ pub struct ApiVersion {
 }
 
 impl FromProperty for ApiVersion {
+    #[allow(unused_variables)]
     fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let data = ffi_property_data(property);
         let major = (data >> 8) & 0xff;
