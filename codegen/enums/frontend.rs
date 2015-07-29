@@ -210,12 +210,12 @@ static PROPERTIES: &'static [PropertyType] = &[
 
 pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>) {
     writeln!(f, "impl FromProperty for {} {{", enum_name).unwrap();
-    writeln!(f, "    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
+    writeln!(f, "    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
     writeln!(f, "        match ffi_property_data(property) {{").unwrap();
     for variant in variants {
         writeln!(f, "            {}::{} => Ok({}::{}),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
     }
-    writeln!(f, "            value => Err(PropertyMappingError::UnrecognizedValue(value))").unwrap();
+    writeln!(f, "            value => Err(PropertyMappingError::UnrecognizedValue(property_name, value))").unwrap();
     writeln!(f, "        }}").unwrap();
     writeln!(f, "    }}").unwrap();
     writeln!(f, "}}").unwrap();
@@ -245,10 +245,10 @@ fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, v
         if variant_info.1.is_empty() {
             writeln!(f, "        {}::{} => Ok({}::{}),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
         } else {
-            writeln!(f, "        {}::{} => FromProperty::from_property(property).map(|p| {}::{}(p)),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
+            writeln!(f, "        {}::{} => FromProperty::from_property(GetProperty::{}, property).map(|p| {}::{}(p)),", FFI_MOD, variant.ffi_name, variant.formatted, enum_name, variant.formatted).unwrap();
         }
     }
-    writeln!(f, "        value => Err(PropertyMappingError::UnrecognizedValue(value))").unwrap();
+    writeln!(f, "        value => Err(PropertyMappingError::UnrecognizedProperty(value))").unwrap();
     writeln!(f, "    }}").unwrap();
     writeln!(f, "}}").unwrap();
 }

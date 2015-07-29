@@ -19,19 +19,19 @@ use std::num::ParseIntError;
 
 #[derive(Copy,Clone,Debug)]
 pub enum PropertyMappingError {
-    UnrecognizedValue(u32),
+    UnrecognizedValue(GetProperty, u32),
     UnrecognizedProperty(u32),
-    StatError,
-    BufferError
+    StatError(GetProperty),
+    BufferError(GetProperty)
 }
 
 impl Error for PropertyMappingError {
     fn description(&self) -> &str {
         match *self {
-            PropertyMappingError::UnrecognizedValue(_) => "Unrecognized property value",
+            PropertyMappingError::UnrecognizedValue(_, _) => "Unrecognized property value",
             PropertyMappingError::UnrecognizedProperty(_) => "Unrecognized property",
-            PropertyMappingError::StatError => "Error interpreting statistical property",
-            PropertyMappingError::BufferError => "Error interpreting buffer property"
+            PropertyMappingError::StatError(_) => "Error interpreting statistical property",
+            PropertyMappingError::BufferError(_) => "Error interpreting buffer property"
         }
     }
 }
@@ -47,11 +47,11 @@ pub type PropertyMappingResult<T> = Result<T, PropertyMappingError>;
 
 
 pub trait FromProperty {
-    fn from_property(ffi::Struct_dtv_property) -> PropertyMappingResult<Self>;
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self>;
 }
 
 impl FromProperty for u32 {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
         let value: u32 = unsafe { *(property.u.data()) };
         Ok(value)
@@ -59,7 +59,7 @@ impl FromProperty for u32 {
 }
 
 impl FromProperty for i32 {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let mut property = property;
         let uvalue: u32 = unsafe { *(property.u.data()) };
         Ok(uvalue as i32)
@@ -152,12 +152,12 @@ impl Into<u32> for Lna {
 }
 
 impl FromProperty for Lna {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         match ffi_property_data(property) {
             0 => Ok(Lna::LnaOff),
             1 => Ok(Lna::LnaOn),
             ffi::LNA_AUTO => Ok(Lna::LnaAuto),
-            value => Err(PropertyMappingError::UnrecognizedValue(value))
+            value => Err(PropertyMappingError::UnrecognizedValue(property_name, value))
         }
     }
 }
@@ -197,13 +197,13 @@ impl Stat {
 }
 
 impl FromProperty for Stat {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let (len, ffi_stats) = unsafe {
             let mut property = property;
             ((*property.u.st()).len, (*property.u.st()).stat)
         };
         if len as usize > STAT_COUNT {
-            return Err(PropertyMappingError::StatError);
+            return Err(PropertyMappingError::StatError(property_name));
         }
         let mut stats = [StatValue::ScaleNotAvailable; STAT_COUNT];
         for i in 0..len as usize {
@@ -216,7 +216,7 @@ impl FromProperty for Stat {
                 ffi::FE_SCALE_COUNTER => StatValue::Counter(uvalue),
                 ffi::FE_SCALE_DECIBEL => StatValue::Decibel(svalue),
                 ffi::FE_SCALE_RELATIVE => StatValue::Relative(uvalue),
-                _ => return Err(PropertyMappingError::StatError)
+                _ => return Err(PropertyMappingError::StatError(property_name))
             };
         }
         Ok(Stat { len: len, stats: stats })
@@ -239,19 +239,19 @@ impl SupportedDeliverySystems {
 }
 
 impl FromProperty for SupportedDeliverySystems {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let (len, buffer) = unsafe {
             let mut property = property;
             ((*property.u.buffer()).len, (*property.u.buffer()).data)
         };
         if len as usize > BUFFER_SIZE {
-            return Err(PropertyMappingError::BufferError);
+            return Err(PropertyMappingError::BufferError(property_name));
         }
         let mut delsys = [DeliverySystem::SysUndefined; BUFFER_SIZE];
         for i in 0..len as usize {
             let mut tmp: ffi::Struct_dtv_property = Default::default();
             unsafe { *tmp.u.data() = buffer[i] as u32; }
-            delsys[i] = try!(FromProperty::from_property(tmp));
+            delsys[i] = try!(FromProperty::from_property(property_name, tmp));
         }
         Ok(SupportedDeliverySystems { len: len, delsys: delsys })
     }
@@ -265,7 +265,7 @@ pub struct ApiVersion {
 }
 
 impl FromProperty for ApiVersion {
-    fn from_property(property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
         let data = ffi_property_data(property);
         let major = (data >> 8) & 0xff;
         let minor = data & 0xff;
