@@ -123,7 +123,7 @@ impl DeviceFileDescriptor {
         make_result(result)
     }
 
-    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<usize> {
         let result = unsafe {
             let ptr = buffer.as_mut_ptr() as *mut c_void;
             read(self.fd, ptr, buffer.len() as size_t)
@@ -131,11 +131,11 @@ impl DeviceFileDescriptor {
         if result == -1 {
             Err(DeviceError::new())
         } else {
-            Ok(result as isize)
+            Ok(result as usize)
         }
     }
 
-    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<usize> {
         let result = unsafe {
             let ptr = buffer.as_mut_ptr() as *const c_void;
             write(self.fd, ptr, buffer.len() as size_t)
@@ -143,7 +143,7 @@ impl DeviceFileDescriptor {
         if result == -1 {
             Err(DeviceError::new())
         } else {
-            Ok(result as isize)
+            Ok(result as usize)
         }
     }
 }

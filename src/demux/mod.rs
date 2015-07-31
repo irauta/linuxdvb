@@ -40,7 +40,7 @@ impl Demux {
         Ok(Demux { device: device })
     }
 
-    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+    pub fn read(&self, buffer: &mut [u8]) -> DeviceResult<usize> {
         self.device.read(buffer)
     }
 
@@ -178,7 +178,7 @@ impl Dvr {
         Ok(Dvr { device: device })
     }
 
-    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<isize> {
+    pub fn write(&self, buffer: &mut [u8]) -> DeviceResult<usize> {
         self.device.write(buffer)
     }
 
