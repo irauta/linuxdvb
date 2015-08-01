@@ -199,6 +199,5 @@ impl Dvr {
 }
 
 fn set_buffer_size(device: &DeviceFileDescriptor, buffer_size: u32) -> DeviceResult<()> {
-    let mut ffi_size = buffer_size as c_ulong;
-    device.ioctl_pointer(ffi::DMX_SET_BUFFER_SIZE as c_ulong, &mut ffi_size)
+    device.ioctl_value(ffi::DMX_SET_BUFFER_SIZE as c_ulong, buffer_size as c_ulong)
 }
