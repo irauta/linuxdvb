@@ -18,6 +18,7 @@ mod ffi;
 use std::path::Path;
 use libc::{c_uint,c_ulong};
 
+pub const DEMUX_FILTER_SIZE: usize = ffi::DMX_FILTER_SIZE as usize;
 
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod enums {
@@ -130,9 +131,19 @@ pub struct SystemTimeCounter {
 }
 
 pub struct DemuxFilter {
-    pub filter: [u8; ffi::DMX_FILTER_SIZE as usize],
-    pub mask: [u8; ffi::DMX_FILTER_SIZE as usize],
-    pub mode: [u8; ffi::DMX_FILTER_SIZE as usize],
+    pub filter: [u8; DEMUX_FILTER_SIZE],
+    pub mask: [u8; DEMUX_FILTER_SIZE],
+    pub mode: [u8; DEMUX_FILTER_SIZE],
+}
+
+impl Default for DemuxFilter {
+    fn default() -> DemuxFilter {
+        DemuxFilter {
+            filter: [0u8; DEMUX_FILTER_SIZE],
+            mask: [0u8; DEMUX_FILTER_SIZE],
+            mode: [0u8; DEMUX_FILTER_SIZE],
+        }
+    }
 }
 
 pub struct SectionFilterParams {
