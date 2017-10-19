@@ -16,6 +16,8 @@ extern crate libc;
 extern crate errno;
 #[macro_use]
 extern crate bitflags;
+#[macro_use]
+extern crate ioctl_gen;
 
 use std::path::Path;
 

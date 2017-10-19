@@ -18,12 +18,13 @@ use std::fmt::{self,Display,Formatter};
 use std::default::Default;
 use std::path::Path;
 
-use libc::{c_int,c_ulong};
+use libc::c_int;
 
 use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
 
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
+mod cmds;
 
 pub mod caps;
 
@@ -46,7 +47,7 @@ impl Frontend {
 
     pub fn get_info(&self) -> DeviceResult<FrontendInfo> {
         let mut ffi_info: ffi::Struct_dvb_frontend_info = Default::default();
-        try!(self.device.ioctl_pointer(ffi::FE_GET_INFO as c_ulong, &mut ffi_info));
+        try!(self.device.ioctl_pointer(cmds::FE_GET_INFO(), &mut ffi_info));
         let c_name = unsafe { CStr::from_ptr(ffi_info.name.as_ptr()) };
         Ok(FrontendInfo {
             name: String::from_utf8_lossy(c_name.to_bytes()).into_owned(),
@@ -64,7 +65,7 @@ impl Frontend {
 
     pub fn read_status(&self) -> DeviceResult<FrontendStatus> {
         let mut ffi_status: ffi::Enum_fe_status = 0;
-        try!(self.device.ioctl_pointer(ffi::FE_READ_STATUS as c_ulong, &mut ffi_status));
+        try!(self.device.ioctl_pointer(cmds::FE_READ_STATUS(), &mut ffi_status));
         Ok(FrontendStatus {
             has_signal: ffi_status & ffi::FE_HAS_SIGNAL != 0,
             has_carrier: ffi_status & ffi::FE_HAS_CARRIER != 0,
@@ -84,7 +85,7 @@ impl Frontend {
             num: ffi_property_list.len() as u32,
             props: ffi_property_list.as_mut_ptr()
         };
-        self.device.ioctl_pointer(ffi::FE_SET_PROPERTY as c_ulong, &mut ffi_properties)
+        self.device.ioctl_pointer(cmds::FE_SET_PROPERTY(), &mut ffi_properties)
     }
 
     pub fn get_properties(&self, properties: &[properties::GetProperty]) -> PropertyResult<Vec<properties::GetPropertyValue>> {
@@ -95,7 +96,7 @@ impl Frontend {
             num: ffi_property_list.len() as u32,
             props: ffi_property_list.as_mut_ptr()
         };
-        try!(self.device.ioctl_pointer(ffi::FE_GET_PROPERTY as c_ulong, &mut ffi_properties));
+        try!(self.device.ioctl_pointer(cmds::FE_GET_PROPERTY(), &mut ffi_properties));
         let mut values = vec!();
         for ffi_property in ffi_property_list {
             let value = try!(properties::get_property_value(ffi_property));
@@ -105,7 +106,7 @@ impl Frontend {
     }
 
     pub fn diseqc_reset_overload(&self) -> DeviceResult<()> {
-        self.device.ioctl_argumentless(ffi::FE_DISEQC_RESET_OVERLOAD as c_ulong)
+        self.device.ioctl_argumentless(cmds::FE_DISEQC_RESET_OVERLOAD())
     }
 
     pub fn diseqc_send_master_cmd(&self, command: DiseqcMasterCommand) -> DeviceResult<()> {
@@ -113,14 +114,14 @@ impl Frontend {
             msg: command.msg,
             msg_len: command.msg_len
         };
-        self.device.ioctl_pointer(ffi::FE_DISEQC_SEND_MASTER_CMD as c_ulong, &mut ffi_cmd)
+        self.device.ioctl_pointer(cmds::FE_DISEQC_SEND_MASTER_CMD(), &mut ffi_cmd)
     }
 
     /// The timeout parameter is not used by most drivers. (2015-06-17)
     pub fn diseqc_recv_slave_reply(&self, timeout: u32) -> DeviceResult<DiseqcSlaveReply> {
         let mut ffi_reply: ffi::Struct_dvb_diseqc_slave_reply = Default::default();
         ffi_reply.timeout = timeout as c_int;
-        try!(self.device.ioctl_pointer(ffi::FE_DISEQC_RECV_SLAVE_REPLY as c_ulong, &mut ffi_reply));
+        try!(self.device.ioctl_pointer(cmds::FE_DISEQC_RECV_SLAVE_REPLY(), &mut ffi_reply));
         Ok(DiseqcSlaveReply {
             msg: ffi_reply.msg,
             msg_len: ffi_reply.msg_len
@@ -132,7 +133,7 @@ impl Frontend {
             SecMiniCmd::A => ffi::SEC_MINI_A,
             SecMiniCmd::B => ffi::SEC_MINI_B
         };
-        self.device.ioctl_pointer(ffi::FE_DISEQC_SEND_BURST as c_ulong, &mut command)
+        self.device.ioctl_pointer(cmds::FE_DISEQC_SEND_BURST(), &mut command)
     }
 
     pub fn set_tone(&self, tone: SecToneMode) -> DeviceResult<()> {
@@ -140,7 +141,7 @@ impl Frontend {
             SecToneMode::On => ffi::SEC_TONE_ON,
             SecToneMode::Off => ffi::SEC_TONE_OFF
         };
-        self.device.ioctl_pointer(ffi::FE_SET_TONE as c_ulong, &mut tone)
+        self.device.ioctl_pointer(cmds::FE_SET_TONE(), &mut tone)
     }
 
     pub fn set_voltage(&self, voltage: properties::Voltage) -> DeviceResult<()> {
@@ -149,11 +150,11 @@ impl Frontend {
             properties::Voltage::SecVoltage18 => ffi::SEC_VOLTAGE_18,
             properties::Voltage::SecVoltageOff => ffi::SEC_VOLTAGE_OFF,
         };
-        self.device.ioctl_value(ffi::FE_SET_VOLTAGE as c_ulong, voltage)
+        self.device.ioctl_value(cmds::FE_SET_VOLTAGE(), voltage)
     }
 
     pub fn enable_high_lnb_voltage(&self, high: u32) -> DeviceResult<()> {
-        self.device.ioctl_value(ffi::FE_ENABLE_HIGH_LNB_VOLTAGE as c_ulong, high)
+        self.device.ioctl_value(cmds::FE_ENABLE_HIGH_LNB_VOLTAGE(), high)
     }
 
     pub fn set_frontend_tune_mode(&self, tune_mode: TuneMode) -> DeviceResult<()> {
@@ -161,7 +162,7 @@ impl Frontend {
             TuneMode::Normal => 0,
             TuneMode::OneShot => ffi::FE_TUNE_MODE_ONESHOT
         };
-        self.device.ioctl_value(ffi::FE_SET_FRONTEND_TUNE_MODE as c_ulong, value)
+        self.device.ioctl_value(cmds::FE_SET_FRONTEND_TUNE_MODE(), value)
     }
 }
 
