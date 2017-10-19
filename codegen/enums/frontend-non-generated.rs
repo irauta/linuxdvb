@@ -46,7 +46,7 @@ impl Display for PropertyMappingError {
 pub type PropertyMappingResult<T> = Result<T, PropertyMappingError>;
 
 
-pub trait FromProperty {
+pub trait FromProperty : Sized {
     fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self>;
 }
 
@@ -102,7 +102,7 @@ impl From<ParseIntError> for PropertyValueError {
 pub type PropertyValueResult<T> = Result<T, PropertyValueError>;
 
 
-pub trait IntoPropertyValue {
+pub trait IntoPropertyValue : Sized {
     fn into_property_value(value_str: &str) -> PropertyValueResult<Self>;
 }
 

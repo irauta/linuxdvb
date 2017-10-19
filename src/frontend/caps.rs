@@ -21,8 +21,8 @@ macro_rules! frontend_caps (
         $($variant:ident => $value:path),+
     }) => (
         bitflags!(
-            flags FrontendCaps: u32 {
-                $(const $variant = $value),+
+            pub struct FrontendCaps: u32 {
+                $(const $variant = $value;)+
             }
         );
         #[derive(Debug,Copy,Clone)]
@@ -36,7 +36,7 @@ macro_rules! frontend_caps (
                     return caps;
                 }
                 $(
-                    if !$variant.is_empty() && self.contains($variant) {
+                    if !FrontendCaps::$variant.is_empty() && self.contains(FrontendCaps::$variant) {
                         caps.push(FrontendCapsEnum::$variant);
                     }
                 )+

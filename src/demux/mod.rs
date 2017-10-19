@@ -165,16 +165,16 @@ pub struct PesFilterParams {
 pub mod flags {
     use super::ffi as ffi;
     bitflags!{
-        flags SectionFilterFlags: u32 {
-            const SecCheckCrC = ffi::DMX_CHECK_CRC,
-            const SecOneShot = ffi::DMX_ONESHOT,
-            const SecImmediateStart = ffi::DMX_IMMEDIATE_START
+        pub struct SectionFilterFlags: u32 {
+            const SecCheckCrC = ffi::DMX_CHECK_CRC;
+            const SecOneShot = ffi::DMX_ONESHOT;
+            const SecImmediateStart = ffi::DMX_IMMEDIATE_START;
         }
     }
 
     bitflags!{
-        flags PesFilterFlags: u32 {
-            const PesImmediateStart = ffi::DMX_IMMEDIATE_START
+        pub struct PesFilterFlags: u32 {
+            const PesImmediateStart = ffi::DMX_IMMEDIATE_START;
         }
     }
 }

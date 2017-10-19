@@ -329,9 +329,9 @@ pub fn generate() {
     let fec_re = re.clone();
     let rscode_re = re.clone();
     let gi_re = re.clone();
-    let fix_fec = move |name: String| fec_re.replace_all(&name, "K$1_N$2");
-    let fix_rscode = move |name: String| rscode_re.replace_all(&name, "N$1_K$2");
-    let fix_gi = move |name: String| gi_re.replace_all(&name, "D$1_TU$2");
+    let fix_fec = move |name: String| fec_re.replace_all(&name, "K${1}_N${2}").into();
+    let fix_rscode = move |name: String| rscode_re.replace_all(&name, "N${1}_K${2}").into();
+    let fix_gi = move |name: String| gi_re.replace_all(&name, "D${1}_TU${2}").into();
 
     // fe_modulation ->
     make_enum(&mut f, "Modulation", &[
