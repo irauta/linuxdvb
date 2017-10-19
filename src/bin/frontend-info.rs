@@ -19,8 +19,8 @@ use std::error::Error;
 use std::path::Path;
 
 use linuxdvb::{Frontend,ReadWriteMode,BlockMode};
-use linuxdvb::properties::GetProperty as GP;
-use linuxdvb::properties::GetPropertyValue as GPV;
+use linuxdvb::GetProperty as GP;
+use linuxdvb::GetPropertyValue as GPV;
 
 type SimpleResult<T> = Result<T, Box<Error>>;
 
@@ -48,7 +48,7 @@ fn show_frontend_info(path: &Path, yet_another_one: bool) -> SimpleResult<()> {
     println!("Maximal symbol rate: {}", info.symbol_rate_max);
     println!("Maximal symbol rate tolerance: {}", info.symbol_rate_tolerance);
 
-    let caps: Vec<linuxdvb::caps::FrontendCapsEnum> = info.caps.into();
+    let caps: Vec<linuxdvb::FrontendCapsEnum> = info.caps.into();
     println!("Frontend capabilities: {:?}", caps);
 
     let status = try!(frontend.read_status());

@@ -15,6 +15,8 @@
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
 
+pub use self::flags::*;
+
 use std::path::Path;
 use libc::{c_uint,c_ulong};
 
@@ -161,8 +163,8 @@ pub struct PesFilterParams {
     pub flags: flags::PesFilterFlags
 }
 
-#[allow(dead_code,non_upper_case_globals)]
-pub mod flags {
+#[allow(non_upper_case_globals)]
+mod flags {
     use super::ffi as ffi;
     bitflags!{
         pub struct SectionFilterFlags: u32 {

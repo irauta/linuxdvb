@@ -27,10 +27,7 @@ mod demux;
 
 pub use device::{ReadWriteMode,BlockMode,DeviceError,DeviceResult};
 pub use frontend::*;
-pub use frontend::properties::*;
-pub use frontend::caps as frontendcaps;
 pub use demux::*;
-pub use demux::flags as demuxflags;
 
 pub fn open_frontend(adapter: u32, frontend: u32, rw_mode: ReadWriteMode, block_mode: BlockMode) -> DeviceResult<Frontend> {
     let path_string = format!("/dev/dvb/adapter{}/frontend{}", adapter, frontend);

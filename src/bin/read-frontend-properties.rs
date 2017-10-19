@@ -18,7 +18,7 @@ use std::error::Error;
 use std::path::Path;
 
 use linuxdvb::{Frontend,ReadWriteMode,BlockMode};
-use linuxdvb::properties::GetProperty as GP;
+use linuxdvb::GetProperty as GP;
 
 type SimpleResult<T> = Result<T, Box<Error>>;
 

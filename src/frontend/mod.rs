@@ -22,14 +22,17 @@ use libc::c_int;
 
 use super::device::{DeviceFileDescriptor,BlockMode,ReadWriteMode,DeviceResult,DeviceError};
 
+pub use self::caps::*;
+pub use self::properties::*;
+
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
 mod cmds;
+mod caps;
 
-pub mod caps;
 
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
-pub mod properties {
+mod properties {
     use super::ffi as ffi;
 
     include!(concat!(env!("OUT_DIR"), "/frontend-enums.rs"));
