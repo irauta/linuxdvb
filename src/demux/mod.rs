@@ -15,8 +15,6 @@
 #[allow(dead_code,non_camel_case_types,non_snake_case)]
 mod ffi;
 
-pub use self::flags::*;
-
 use std::path::Path;
 use libc::{c_uint,c_ulong};
 
@@ -152,7 +150,7 @@ pub struct SectionFilterParams {
     pub pid: u16,
     pub filter: DemuxFilter,
     pub timeout: u32,
-    pub flags: flags::SectionFilterFlags
+    pub flags: SectionFilterFlags
 }
 
 pub struct PesFilterParams {
@@ -160,24 +158,20 @@ pub struct PesFilterParams {
     pub input: Input,
     pub output: Output,
     pub pes_type: PesType,
-    pub flags: flags::PesFilterFlags
+    pub flags: PesFilterFlags
 }
 
-#[allow(non_upper_case_globals)]
-mod flags {
-    use super::ffi as ffi;
-    bitflags!{
-        pub struct SectionFilterFlags: u32 {
-            const SecCheckCrC = ffi::DMX_CHECK_CRC;
-            const SecOneShot = ffi::DMX_ONESHOT;
-            const SecImmediateStart = ffi::DMX_IMMEDIATE_START;
-        }
+bitflags!{
+    pub struct SectionFilterFlags: u32 {
+        const CHECK_CRC = ffi::DMX_CHECK_CRC;
+        const ONESHOT = ffi::DMX_ONESHOT;
+        const IMMEDIATE_START = ffi::DMX_IMMEDIATE_START;
     }
+}
 
-    bitflags!{
-        pub struct PesFilterFlags: u32 {
-            const PesImmediateStart = ffi::DMX_IMMEDIATE_START;
-        }
+bitflags!{
+    pub struct PesFilterFlags: u32 {
+        const IMMEDIATE_START = ffi::DMX_IMMEDIATE_START;
     }
 }
 
