@@ -14,17 +14,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# See frontend.sh for information on what is going on here
+# To update the ffi.rs for demux functionality, run this script.
+# You need to have bindgen installed; to install it, run
+#     cargo install bindgen
 
-DMX_H=/usr/include/linux/dvb/dmx.h
+# Get the path to this script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo '#include <sys/ioctl.h>'
+# This is the header that we're dealing with
+FRONTEND_H=/usr/include/linux/dvb/dmx.h
 
-sed -re 's/(#define\W+)([A-Z0-9_]+)(.+)/\1\2_RUST_BIND\3/' \
-    -e 's/\[DMX_FILTER_SIZE\]/\[DMX_FILTER_SIZE_RUST_BIND\]/' $DMX_H
+# Output file
+OUTPUT="$DIR/../../src/demux/ffi.rs"
 
-echo 'typedef enum fe_rust_bind_defines {'
-
-sed -nre "s/#define +([A-Z0-9_]+)\W.+/\t\1 = \1_RUST_BIND,/p" $DMX_H
-
-echo '} fe_rust_bind_defines_t;'
+# --with-derive-default because Default::default() is used in a couple places
+# --constified-enum and --no-prepend-enum-name are used because that matches
+# the older version of bindgen outputed the enum varients as bare constants, so
+# basically to avoid code breakage after updating to new bindgen.
+bindgen -o "$OUTPUT" --with-derive-default --constified-enum='.+' --no-prepend-enum-name "$FRONTEND_H"

@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[allow(dead_code,non_camel_case_types,non_snake_case)]
+#[allow(dead_code,non_camel_case_types,non_upper_case_globals)]
 mod ffi;
+mod cmds;
 
 use std::path::Path;
 use libc::{c_uint,c_ulong};
@@ -46,17 +47,17 @@ impl Demux {
     }
 
     pub fn start(&self) -> DeviceResult<()> {
-        self.device.ioctl_argumentless(ffi::DMX_START as c_ulong)
+        self.device.ioctl_argumentless(cmds::DMX_START())
     }
 
     pub fn stop(&self) -> DeviceResult<()> {
-        self.device.ioctl_argumentless(ffi::DMX_STOP as c_ulong)
+        self.device.ioctl_argumentless(cmds::DMX_STOP())
     }
 
     pub fn set_filter(&self, filter_params: &SectionFilterParams) -> DeviceResult<()> {
-        let mut ffi_params = ffi::Struct_dmx_sct_filter_params {
+        let mut ffi_params = ffi::dmx_sct_filter_params {
             pid: filter_params.pid,
-            filter: ffi::Struct_dmx_filter {
+            filter: ffi::dmx_filter {
                 filter: filter_params.filter.filter,
                 mask: filter_params.filter.mask,
                 mode: filter_params.filter.mode,
@@ -64,18 +65,18 @@ impl Demux {
             timeout: filter_params.timeout,
             flags: filter_params.flags.bits()
         };
-        self.device.ioctl_pointer(ffi::DMX_SET_FILTER as c_ulong, &mut ffi_params)
+        self.device.ioctl_pointer(cmds::DMX_SET_FILTER(), &mut ffi_params)
     }
 
     pub fn set_pes_filter(&self, filter_params: &PesFilterParams) -> DeviceResult<()> {
-        let mut ffi_params = ffi::Struct_dmx_pes_filter_params {
+        let mut ffi_params = ffi::dmx_pes_filter_params {
             pid: filter_params.pid,
             input: filter_params.input.into(),
             output: filter_params.output.into(),
             pes_type: filter_params.pes_type.into(),
             flags: filter_params.flags.bits()
         };
-        self.device.ioctl_pointer(ffi::DMX_SET_PES_FILTER as c_ulong, &mut ffi_params)
+        self.device.ioctl_pointer(cmds::DMX_SET_PES_FILTER(), &mut ffi_params)
     }
 
     pub fn set_buffer_size(&self, buffer_size: u32) -> DeviceResult<()> {
@@ -83,14 +84,14 @@ impl Demux {
     }
 
     pub fn get_system_time_counter(&self, num: u32) -> DeviceResult<SystemTimeCounter> {
-        let mut ffi_stc = ffi::Struct_dmx_stc { num: num as c_uint, base: 0, stc: 0 };
-        try!(self.device.ioctl_pointer(ffi::DMX_GET_STC as c_ulong, &mut ffi_stc));
+        let mut ffi_stc = ffi::dmx_stc { num: num as c_uint, base: 0, stc: 0 };
+        try!(self.device.ioctl_pointer(cmds::DMX_GET_STC(), &mut ffi_stc));
         Ok(SystemTimeCounter { base: ffi_stc.base, counter: ffi_stc.stc })
     }
 
     pub fn get_pes_pids(&self) -> DeviceResult<[u16; 5]> {
         let mut ffi_pids = [0u16; 5];
-        try!(self.device.ioctl_pointer(ffi::DMX_GET_PES_PIDS as c_ulong, ffi_pids.as_mut_ptr()));
+        try!(self.device.ioctl_pointer(cmds::DMX_GET_PES_PIDS(), ffi_pids.as_mut_ptr()));
         Ok(ffi_pids)
     }
 
@@ -112,12 +113,12 @@ impl Demux {
 
     pub fn add_pid(&self, pid: u16) -> DeviceResult<()> {
         let mut ffi_pid = pid;
-        self.device.ioctl_pointer(ffi::DMX_ADD_PID as c_ulong, &mut ffi_pid)
+        self.device.ioctl_pointer(cmds::DMX_ADD_PID(), &mut ffi_pid)
     }
 
     pub fn remove_pid(&self, pid: u16) -> DeviceResult<()> {
         let mut ffi_pid = pid;
-        self.device.ioctl_pointer(ffi::DMX_REMOVE_PID as c_ulong, &mut ffi_pid)
+        self.device.ioctl_pointer(cmds::DMX_REMOVE_PID(), &mut ffi_pid)
     }
 }
 
@@ -197,5 +198,5 @@ impl Dvr {
 }
 
 fn set_buffer_size(device: &DeviceFileDescriptor, buffer_size: u32) -> DeviceResult<()> {
-    device.ioctl_value(ffi::DMX_SET_BUFFER_SIZE as c_ulong, buffer_size as c_ulong)
+    device.ioctl_value(cmds::DMX_SET_BUFFER_SIZE(), buffer_size as c_ulong)
 }
