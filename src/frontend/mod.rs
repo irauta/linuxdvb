@@ -49,7 +49,7 @@ impl Frontend {
     }
 
     pub fn get_info(&self) -> DeviceResult<FrontendInfo> {
-        let mut ffi_info: ffi::Struct_dvb_frontend_info = Default::default();
+        let mut ffi_info: ffi::dvb_frontend_info = Default::default();
         try!(self.device.ioctl_pointer(cmds::FE_GET_INFO(), &mut ffi_info));
         let c_name = unsafe { CStr::from_ptr(ffi_info.name.as_ptr()) };
         Ok(FrontendInfo {
@@ -67,7 +67,7 @@ impl Frontend {
     }
 
     pub fn read_status(&self) -> DeviceResult<FrontendStatus> {
-        let mut ffi_status: ffi::Enum_fe_status = 0;
+        let mut ffi_status: ffi::fe_status = 0;
         try!(self.device.ioctl_pointer(cmds::FE_READ_STATUS(), &mut ffi_status));
         Ok(FrontendStatus {
             has_signal: ffi_status & ffi::FE_HAS_SIGNAL != 0,
@@ -81,10 +81,10 @@ impl Frontend {
     }
 
     pub fn set_properties(&self, properties: &[properties::SetPropertyValue]) -> DeviceResult<()> {
-        let mut ffi_property_list: Vec<ffi::Struct_dtv_property> = properties.iter().map(
+        let mut ffi_property_list: Vec<ffi::dtv_property> = properties.iter().map(
             properties::set_property_value
         ).collect();
-        let mut ffi_properties = ffi::Struct_dtv_properties {
+        let mut ffi_properties = ffi::dtv_properties {
             num: ffi_property_list.len() as u32,
             props: ffi_property_list.as_mut_ptr()
         };
@@ -92,10 +92,10 @@ impl Frontend {
     }
 
     pub fn get_properties(&self, properties: &[properties::GetProperty]) -> PropertyResult<Vec<properties::GetPropertyValue>> {
-        let mut ffi_property_list: Vec<ffi::Struct_dtv_property> = properties.iter().map(
-            |p| ffi::Struct_dtv_property { cmd: (*p).into(), ..Default::default() }
+        let mut ffi_property_list: Vec<ffi::dtv_property> = properties.iter().map(
+            |p| ffi::dtv_property { cmd: (*p).into(), ..Default::default() }
         ).collect();
-        let mut ffi_properties = ffi::Struct_dtv_properties {
+        let mut ffi_properties = ffi::dtv_properties {
             num: ffi_property_list.len() as u32,
             props: ffi_property_list.as_mut_ptr()
         };
@@ -113,7 +113,7 @@ impl Frontend {
     }
 
     pub fn diseqc_send_master_cmd(&self, command: DiseqcMasterCommand) -> DeviceResult<()> {
-        let mut ffi_cmd = ffi::Struct_dvb_diseqc_master_cmd {
+        let mut ffi_cmd = ffi::dvb_diseqc_master_cmd {
             msg: command.msg,
             msg_len: command.msg_len
         };
@@ -122,7 +122,7 @@ impl Frontend {
 
     /// The timeout parameter is not used by most drivers. (2015-06-17)
     pub fn diseqc_recv_slave_reply(&self, timeout: u32) -> DeviceResult<DiseqcSlaveReply> {
-        let mut ffi_reply: ffi::Struct_dvb_diseqc_slave_reply = Default::default();
+        let mut ffi_reply: ffi::dvb_diseqc_slave_reply = Default::default();
         ffi_reply.timeout = timeout as c_int;
         try!(self.device.ioctl_pointer(cmds::FE_DISEQC_RECV_SLAVE_REPLY(), &mut ffi_reply));
         Ok(DiseqcSlaveReply {

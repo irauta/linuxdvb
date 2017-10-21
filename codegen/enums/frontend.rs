@@ -210,7 +210,7 @@ static PROPERTIES: &'static [PropertyType] = &[
 
 pub fn make_simple_from_property(f: &mut File, enum_name: &str, variants: &Vec<VariantInfo>) {
     writeln!(f, "impl FromProperty for {} {{", enum_name).unwrap();
-    writeln!(f, "    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
+    writeln!(f, "    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {{").unwrap();
     writeln!(f, "        match ffi_property_data(property) {{").unwrap();
     for variant in variants {
         writeln!(f, "            {}::{} => Ok({}::{}),", FFI_MOD, variant.ffi_name, enum_name, variant.formatted).unwrap();
@@ -238,7 +238,7 @@ fn make_property_value_enum(f: &mut File, enum_name: &str, variants: &Vec<Varian
 }
 
 fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType]) {
-    writeln!(f, "pub fn {}(property: ffi::Struct_dtv_property) -> PropertyMappingResult<{}> {{", fn_name, enum_name).unwrap();
+    writeln!(f, "pub fn {}(property: ffi::dtv_property) -> PropertyMappingResult<{}> {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match property.cmd {{").unwrap();
     for variant in variants {
         let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();
@@ -254,7 +254,7 @@ fn make_property_value_getter_fn(f: &mut File, fn_name: &str, enum_name: &str, v
 }
 
 fn make_property_value_setter_fn(f: &mut File, fn_name: &str, enum_name: &str, variants: &Vec<VariantInfo>, types: &[PropertyType]) {
-    writeln!(f, "pub fn {}(property: &{}) -> ffi::Struct_dtv_property {{", fn_name, enum_name).unwrap();
+    writeln!(f, "pub fn {}(property: &{}) -> ffi::dtv_property {{", fn_name, enum_name).unwrap();
     writeln!(f, "    match *property {{").unwrap();
     for variant in variants {
         let variant_info = types.iter().find(|t| t.0 == variant.ffi_name).unwrap();

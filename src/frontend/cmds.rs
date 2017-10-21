@@ -23,15 +23,15 @@ use libc::c_ulong;
 use super::ffi::*;
 
 pub fn FE_SET_PROPERTY() -> c_ulong {
-   iow!('o', 82, ::std::mem::size_of::<Struct_dtv_properties>()) as c_ulong
+   iow!('o', 82, ::std::mem::size_of::<dtv_properties>()) as c_ulong
 }
 
 pub fn FE_GET_PROPERTY() -> c_ulong {
-   ior!('o', 83, ::std::mem::size_of::<Struct_dtv_properties>()) as c_ulong
+   ior!('o', 83, ::std::mem::size_of::<dtv_properties>()) as c_ulong
 }
 
 pub fn FE_GET_INFO() -> c_ulong {
-   ior!('o', 61, ::std::mem::size_of::<Struct_dvb_frontend_info>()) as c_ulong
+   ior!('o', 61, ::std::mem::size_of::<dvb_frontend_info>()) as c_ulong
 }
 
 pub fn FE_DISEQC_RESET_OVERLOAD() -> c_ulong {
@@ -39,11 +39,11 @@ pub fn FE_DISEQC_RESET_OVERLOAD() -> c_ulong {
 }
 
 pub fn FE_DISEQC_SEND_MASTER_CMD() -> c_ulong {
-   iow!('o', 63, ::std::mem::size_of::<Struct_dvb_diseqc_master_cmd>()) as c_ulong
+   iow!('o', 63, ::std::mem::size_of::<dvb_diseqc_master_cmd>()) as c_ulong
 }
 
 pub fn FE_DISEQC_RECV_SLAVE_REPLY() -> c_ulong {
-   ior!('o', 64, ::std::mem::size_of::<Struct_dvb_diseqc_slave_reply>()) as c_ulong
+   ior!('o', 64, ::std::mem::size_of::<dvb_diseqc_slave_reply>()) as c_ulong
 }
 
 pub fn FE_DISEQC_SEND_BURST() -> c_ulong {
@@ -83,11 +83,11 @@ pub fn FE_READ_UNCORRECTED_BLOCKS() -> c_ulong {
 }
 
 pub fn FE_SET_FRONTEND() -> c_ulong {
-    iow!('o', 76, ::std::mem::size_of::<Struct_dvb_frontend_parameters>()) as c_ulong
+    iow!('o', 76, ::std::mem::size_of::<dvb_frontend_parameters>()) as c_ulong
 }
 
 pub fn FE_GET_FRONTEND() -> c_ulong {
-    ior!('o', 77, ::std::mem::size_of::<Struct_dvb_frontend_parameters>()) as c_ulong
+    ior!('o', 77, ::std::mem::size_of::<dvb_frontend_parameters>()) as c_ulong
 }
 
 pub fn FE_SET_FRONTEND_TUNE_MODE() -> c_ulong {
@@ -95,7 +95,7 @@ pub fn FE_SET_FRONTEND_TUNE_MODE() -> c_ulong {
 }
 
 pub fn FE_GET_EVENT() -> c_ulong {
-    ior!('o', 78, ::std::mem::size_of::<Struct_dvb_frontend_event>()) as c_ulong
+    ior!('o', 78, ::std::mem::size_of::<dvb_frontend_event>()) as c_ulong
 }
 
 pub fn FE_DISHNETWORK_SEND_LEGACY_CMD() -> c_ulong {

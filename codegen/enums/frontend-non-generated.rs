@@ -47,23 +47,21 @@ pub type PropertyMappingResult<T> = Result<T, PropertyMappingError>;
 
 
 pub trait FromProperty : Sized {
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self>;
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self>;
 }
 
 impl FromProperty for u32 {
     #[allow(unused_variables)]
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
-        let mut property = property;
-        let value: u32 = unsafe { *(property.u.data()) };
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
+        let value: u32 = unsafe { property.u.data };
         Ok(value)
     }
 }
 
 impl FromProperty for i32 {
     #[allow(unused_variables)]
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
-        let mut property = property;
-        let uvalue: u32 = unsafe { *(property.u.data()) };
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
+        let uvalue: u32 = unsafe { property.u.data };
         Ok(uvalue as i32)
     }
 }
@@ -119,18 +117,15 @@ impl IntoPropertyValue for i32 {
 }
 
 
-fn ffi_property_data(property: ffi::Struct_dtv_property) -> u32 {
+fn ffi_property_data(property: ffi::dtv_property) -> u32 {
     unsafe {
-        let mut property = property;
-        *property.u.data()
+        property.u.data
     }
 }
 
-fn make_ffi_property(cmd: u32, value: u32) -> ffi::Struct_dtv_property {
-    let mut p = ffi::Struct_dtv_property { cmd: cmd, ..Default::default() };
-    unsafe {
-        *p.u.data() = value;
-    }
+fn make_ffi_property(cmd: u32, value: u32) -> ffi::dtv_property {
+    let mut p = ffi::dtv_property { cmd: cmd, ..Default::default() };
+    p.u.data = value;
     p
 }
 
@@ -148,18 +143,18 @@ impl Into<u32> for Lna {
             // On and off variants as defined by Linux DVB documentation
             Lna::LnaOff => 0,
             Lna::LnaOn => 1,
-            Lna::LnaAuto => ffi::LNA_AUTO
+            Lna::LnaAuto => ffi::LNA_AUTO as u32
         }
     }
 }
 
 impl FromProperty for Lna {
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
-        match ffi_property_data(property) {
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
+        match ffi_property_data(property) as i32 {
             0 => Ok(Lna::LnaOff),
             1 => Ok(Lna::LnaOn),
             ffi::LNA_AUTO => Ok(Lna::LnaAuto),
-            value => Err(PropertyMappingError::UnrecognizedValue(property_name, value))
+            value => Err(PropertyMappingError::UnrecognizedValue(property_name, value as u32))
         }
     }
 }
@@ -199,19 +194,18 @@ impl Stat {
 }
 
 impl FromProperty for Stat {
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
         let (len, ffi_stats) = unsafe {
-            let mut property = property;
-            ((*property.u.st()).len, (*property.u.st()).stat)
+            ((property.u.st).len, (property.u.st).stat)
         };
         if len as usize > STAT_COUNT {
             return Err(PropertyMappingError::StatError(property_name));
         }
         let mut stats = [StatValue::ScaleNotAvailable; STAT_COUNT];
         for i in 0..len as usize {
-            let mut ffi_stat = ffi_stats[i];
-            let uvalue: u64 = unsafe { *ffi_stat.uvalue() };
-            let svalue: i64 = unsafe { *ffi_stat.svalue() };
+            let ffi_stat = ffi_stats[i];
+            let uvalue: u64 = unsafe { ffi_stat.__bindgen_anon_1.uvalue };
+            let svalue: i64 = unsafe { ffi_stat.__bindgen_anon_1.svalue };
             let scale = ffi_stat.scale as u32;
             stats[i] = match scale {
                 ffi::FE_SCALE_NOT_AVAILABLE => StatValue::ScaleNotAvailable,
@@ -241,18 +235,17 @@ impl SupportedDeliverySystems {
 }
 
 impl FromProperty for SupportedDeliverySystems {
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
         let (len, buffer) = unsafe {
-            let mut property = property;
-            ((*property.u.buffer()).len, (*property.u.buffer()).data)
+            ((property.u.buffer).len, (property.u.buffer).data)
         };
         if len as usize > BUFFER_SIZE {
             return Err(PropertyMappingError::BufferError(property_name));
         }
         let mut delsys = [DeliverySystem::SysUndefined; BUFFER_SIZE];
         for i in 0..len as usize {
-            let mut tmp: ffi::Struct_dtv_property = Default::default();
-            unsafe { *tmp.u.data() = buffer[i] as u32; }
+            let mut tmp: ffi::dtv_property = Default::default();
+            tmp.u.data = buffer[i] as u32;
             delsys[i] = try!(FromProperty::from_property(property_name, tmp));
         }
         Ok(SupportedDeliverySystems { len: len, delsys: delsys })
@@ -268,7 +261,7 @@ pub struct ApiVersion {
 
 impl FromProperty for ApiVersion {
     #[allow(unused_variables)]
-    fn from_property(property_name: GetProperty, property: ffi::Struct_dtv_property) -> PropertyMappingResult<Self> {
+    fn from_property(property_name: GetProperty, property: ffi::dtv_property) -> PropertyMappingResult<Self> {
         let data = ffi_property_data(property);
         let major = (data >> 8) & 0xff;
         let minor = data & 0xff;
@@ -279,9 +272,9 @@ impl FromProperty for ApiVersion {
 
 #[test]
 fn ffi_property_generation() {
-    let mut property = make_ffi_property(123, 456);
+    let property = make_ffi_property(123, 456);
     assert_eq!(property.cmd, 123);
-    let data = unsafe { *property.u.data() };
+    let data = unsafe { property.u.data };
     assert_eq!(data, 456);
 }
 
