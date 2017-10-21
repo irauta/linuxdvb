@@ -31,4 +31,9 @@ OUTPUT="$DIR/../../src/frontend/ffi.rs"
 # --constified-enum and --no-prepend-enum-name are used because that matches
 # the older version of bindgen outputed the enum varients as bare constants, so
 # basically to avoid code breakage after updating to new bindgen.
-bindgen -o "$OUTPUT" --with-derive-default --constified-enum='.+' --no-prepend-enum-name "$FRONTEND_H"
+bindgen -o "$OUTPUT" \
+    --with-derive-default \
+    --constified-enum='.+' \
+    --no-prepend-enum-name \
+    --no-layout-tests \
+    "$FRONTEND_H"

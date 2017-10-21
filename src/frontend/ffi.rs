@@ -92,18 +92,6 @@ pub type __u64 = ::std::os::raw::c_ulonglong;
 pub struct __kernel_fd_set {
     pub fds_bits: [::std::os::raw::c_ulong; 16usize],
 }
-#[test]
-fn bindgen_test_layout___kernel_fd_set() {
-    assert_eq!(::std::mem::size_of::<__kernel_fd_set>() , 128usize , concat !
-               ( "Size of: " , stringify ! ( __kernel_fd_set ) ));
-    assert_eq! (::std::mem::align_of::<__kernel_fd_set>() , 8usize , concat !
-                ( "Alignment of " , stringify ! ( __kernel_fd_set ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __kernel_fd_set ) ) . fds_bits as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __kernel_fd_set ) ,
-                "::" , stringify ! ( fds_bits ) ));
-}
 impl Clone for __kernel_fd_set {
     fn clone(&self) -> Self { *self }
 }
@@ -133,18 +121,6 @@ pub type __kernel_ptrdiff_t = __kernel_long_t;
 #[derive(Debug, Default, Copy)]
 pub struct __kernel_fsid_t {
     pub val: [::std::os::raw::c_int; 2usize],
-}
-#[test]
-fn bindgen_test_layout___kernel_fsid_t() {
-    assert_eq!(::std::mem::size_of::<__kernel_fsid_t>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( __kernel_fsid_t ) ));
-    assert_eq! (::std::mem::align_of::<__kernel_fsid_t>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( __kernel_fsid_t ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __kernel_fsid_t ) ) . val as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __kernel_fsid_t ) ,
-                "::" , stringify ! ( val ) ));
 }
 impl Clone for __kernel_fsid_t {
     fn clone(&self) -> Self { *self }
@@ -218,71 +194,6 @@ pub struct dvb_frontend_info {
     pub notifier_delay: __u32,
     pub caps: fe_caps,
 }
-#[test]
-fn bindgen_test_layout_dvb_frontend_info() {
-    assert_eq!(::std::mem::size_of::<dvb_frontend_info>() , 168usize , concat
-               ! ( "Size of: " , stringify ! ( dvb_frontend_info ) ));
-    assert_eq! (::std::mem::align_of::<dvb_frontend_info>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( dvb_frontend_info ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . name as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( name ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . type_ as * const
-                _ as usize } , 128usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( type_ ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . frequency_min as
-                * const _ as usize } , 132usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( frequency_min ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . frequency_max as
-                * const _ as usize } , 136usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( frequency_max ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) .
-                frequency_stepsize as * const _ as usize } , 140usize , concat
-                ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( frequency_stepsize ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) .
-                frequency_tolerance as * const _ as usize } , 144usize ,
-                concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( frequency_tolerance ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . symbol_rate_min
-                as * const _ as usize } , 148usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( symbol_rate_min ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . symbol_rate_max
-                as * const _ as usize } , 152usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( symbol_rate_max ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) .
-                symbol_rate_tolerance as * const _ as usize } , 156usize ,
-                concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( symbol_rate_tolerance ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . notifier_delay as
-                * const _ as usize } , 160usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( notifier_delay ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_info ) ) . caps as * const _
-                as usize } , 164usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_info ) ,
-                "::" , stringify ! ( caps ) ));
-}
 impl Clone for dvb_frontend_info {
     fn clone(&self) -> Self { *self }
 }
@@ -297,25 +208,6 @@ pub struct dvb_diseqc_master_cmd {
     pub msg: [__u8; 6usize],
     pub msg_len: __u8,
 }
-#[test]
-fn bindgen_test_layout_dvb_diseqc_master_cmd() {
-    assert_eq!(::std::mem::size_of::<dvb_diseqc_master_cmd>() , 7usize ,
-               concat ! ( "Size of: " , stringify ! ( dvb_diseqc_master_cmd )
-               ));
-    assert_eq! (::std::mem::align_of::<dvb_diseqc_master_cmd>() , 1usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dvb_diseqc_master_cmd ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_diseqc_master_cmd ) ) . msg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_diseqc_master_cmd )
-                , "::" , stringify ! ( msg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_diseqc_master_cmd ) ) . msg_len as *
-                const _ as usize } , 6usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_diseqc_master_cmd )
-                , "::" , stringify ! ( msg_len ) ));
-}
 impl Clone for dvb_diseqc_master_cmd {
     fn clone(&self) -> Self { *self }
 }
@@ -325,30 +217,6 @@ pub struct dvb_diseqc_slave_reply {
     pub msg: [__u8; 4usize],
     pub msg_len: __u8,
     pub timeout: ::std::os::raw::c_int,
-}
-#[test]
-fn bindgen_test_layout_dvb_diseqc_slave_reply() {
-    assert_eq!(::std::mem::size_of::<dvb_diseqc_slave_reply>() , 12usize ,
-               concat ! ( "Size of: " , stringify ! ( dvb_diseqc_slave_reply )
-               ));
-    assert_eq! (::std::mem::align_of::<dvb_diseqc_slave_reply>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dvb_diseqc_slave_reply ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_diseqc_slave_reply ) ) . msg as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_diseqc_slave_reply
-                ) , "::" , stringify ! ( msg ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_diseqc_slave_reply ) ) . msg_len as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_diseqc_slave_reply
-                ) , "::" , stringify ! ( msg_len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_diseqc_slave_reply ) ) . timeout as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_diseqc_slave_reply
-                ) , "::" , stringify ! ( timeout ) ));
 }
 impl Clone for dvb_diseqc_slave_reply {
     fn clone(&self) -> Self { *self }
@@ -501,23 +369,6 @@ pub struct dtv_cmds_h {
     pub name: *mut ::std::os::raw::c_char,
     pub cmd: __u32,
     pub _bitfield_1: u32,
-}
-#[test]
-fn bindgen_test_layout_dtv_cmds_h() {
-    assert_eq!(::std::mem::size_of::<dtv_cmds_h>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( dtv_cmds_h ) ));
-    assert_eq! (::std::mem::align_of::<dtv_cmds_h>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( dtv_cmds_h ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_cmds_h ) ) . name as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_cmds_h ) , "::" ,
-                stringify ! ( name ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_cmds_h ) ) . cmd as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_cmds_h ) , "::" ,
-                stringify ! ( cmd ) ));
 }
 impl Clone for dtv_cmds_h {
     fn clone(&self) -> Self { *self }
@@ -699,42 +550,11 @@ pub union dtv_stats__bindgen_ty_1 {
     pub svalue: __s64,
     _bindgen_union_align: u64,
 }
-#[test]
-fn bindgen_test_layout_dtv_stats__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<dtv_stats__bindgen_ty_1>() , 8usize ,
-               concat ! (
-               "Size of: " , stringify ! ( dtv_stats__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<dtv_stats__bindgen_ty_1>() , 8usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dtv_stats__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_stats__bindgen_ty_1 ) ) . uvalue as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_stats__bindgen_ty_1
-                ) , "::" , stringify ! ( uvalue ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_stats__bindgen_ty_1 ) ) . svalue as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_stats__bindgen_ty_1
-                ) , "::" , stringify ! ( svalue ) ));
-}
 impl Clone for dtv_stats__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 impl Default for dtv_stats__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[test]
-fn bindgen_test_layout_dtv_stats() {
-    assert_eq!(::std::mem::size_of::<dtv_stats>() , 9usize , concat ! (
-               "Size of: " , stringify ! ( dtv_stats ) ));
-    assert_eq! (::std::mem::align_of::<dtv_stats>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( dtv_stats ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_stats ) ) . scale as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_stats ) , "::" ,
-                stringify ! ( scale ) ));
 }
 impl Clone for dtv_stats {
     fn clone(&self) -> Self { *self }
@@ -747,23 +567,6 @@ impl Default for dtv_stats {
 pub struct dtv_fe_stats {
     pub len: __u8,
     pub stat: [dtv_stats; 4usize],
-}
-#[test]
-fn bindgen_test_layout_dtv_fe_stats() {
-    assert_eq!(::std::mem::size_of::<dtv_fe_stats>() , 37usize , concat ! (
-               "Size of: " , stringify ! ( dtv_fe_stats ) ));
-    assert_eq! (::std::mem::align_of::<dtv_fe_stats>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( dtv_fe_stats ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_fe_stats ) ) . len as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_fe_stats ) , "::" ,
-                stringify ! ( len ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_fe_stats ) ) . stat as * const _ as
-                usize } , 1usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_fe_stats ) , "::" ,
-                stringify ! ( stat ) ));
 }
 impl Clone for dtv_fe_stats {
     fn clone(&self) -> Self { *self }
@@ -795,109 +598,17 @@ pub struct dtv_property__bindgen_ty_1__bindgen_ty_1 {
     pub reserved1: [__u32; 3usize],
     pub reserved2: *mut ::std::os::raw::c_void,
 }
-#[test]
-fn bindgen_test_layout_dtv_property__bindgen_ty_1__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<dtv_property__bindgen_ty_1__bindgen_ty_1>()
-               , 56usize , concat ! (
-               "Size of: " , stringify ! (
-               dtv_property__bindgen_ty_1__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<dtv_property__bindgen_ty_1__bindgen_ty_1>()
-                , 8usize , concat ! (
-                "Alignment of " , stringify ! (
-                dtv_property__bindgen_ty_1__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const dtv_property__bindgen_ty_1__bindgen_ty_1 ) )
-                . data as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify
-                ! ( data ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const dtv_property__bindgen_ty_1__bindgen_ty_1 ) )
-                . len as * const _ as usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify
-                ! ( len ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const dtv_property__bindgen_ty_1__bindgen_ty_1 ) )
-                . reserved1 as * const _ as usize } , 36usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify
-                ! ( reserved1 ) ));
-    assert_eq! (unsafe {
-                & (
-                * ( 0 as * const dtv_property__bindgen_ty_1__bindgen_ty_1 ) )
-                . reserved2 as * const _ as usize } , 48usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1__bindgen_ty_1 ) , "::" , stringify
-                ! ( reserved2 ) ));
-}
 impl Clone for dtv_property__bindgen_ty_1__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 impl Default for dtv_property__bindgen_ty_1__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
 }
-#[test]
-fn bindgen_test_layout_dtv_property__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<dtv_property__bindgen_ty_1>() , 56usize ,
-               concat ! (
-               "Size of: " , stringify ! ( dtv_property__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<dtv_property__bindgen_ty_1>() , 8usize
-                , concat ! (
-                "Alignment of " , stringify ! ( dtv_property__bindgen_ty_1 )
-                ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property__bindgen_ty_1 ) ) . data as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1 ) , "::" , stringify ! ( data ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property__bindgen_ty_1 ) ) . st as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1 ) , "::" , stringify ! ( st ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property__bindgen_ty_1 ) ) . buffer
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dtv_property__bindgen_ty_1 ) , "::" , stringify ! ( buffer )
-                ));
-}
 impl Clone for dtv_property__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 impl Default for dtv_property__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[test]
-fn bindgen_test_layout_dtv_property() {
-    assert_eq!(::std::mem::size_of::<dtv_property>() , 76usize , concat ! (
-               "Size of: " , stringify ! ( dtv_property ) ));
-    assert_eq! (::std::mem::align_of::<dtv_property>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( dtv_property ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property ) ) . cmd as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_property ) , "::" ,
-                stringify ! ( cmd ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property ) ) . reserved as * const _
-                as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_property ) , "::" ,
-                stringify ! ( reserved ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property ) ) . u as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_property ) , "::" ,
-                stringify ! ( u ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_property ) ) . result as * const _ as
-                usize } , 72usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_property ) , "::" ,
-                stringify ! ( result ) ));
 }
 impl Clone for dtv_property {
     fn clone(&self) -> Self { *self }
@@ -910,23 +621,6 @@ impl Default for dtv_property {
 pub struct dtv_properties {
     pub num: __u32,
     pub props: *mut dtv_property,
-}
-#[test]
-fn bindgen_test_layout_dtv_properties() {
-    assert_eq!(::std::mem::size_of::<dtv_properties>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( dtv_properties ) ));
-    assert_eq! (::std::mem::align_of::<dtv_properties>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( dtv_properties ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_properties ) ) . num as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_properties ) , "::"
-                , stringify ! ( num ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dtv_properties ) ) . props as * const _
-                as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dtv_properties ) , "::"
-                , stringify ! ( props ) ));
 }
 impl Clone for dtv_properties {
     fn clone(&self) -> Self { *self }
@@ -964,24 +658,6 @@ pub struct dvb_qpsk_parameters {
     pub symbol_rate: __u32,
     pub fec_inner: fe_code_rate_t,
 }
-#[test]
-fn bindgen_test_layout_dvb_qpsk_parameters() {
-    assert_eq!(::std::mem::size_of::<dvb_qpsk_parameters>() , 8usize , concat
-               ! ( "Size of: " , stringify ! ( dvb_qpsk_parameters ) ));
-    assert_eq! (::std::mem::align_of::<dvb_qpsk_parameters>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dvb_qpsk_parameters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_qpsk_parameters ) ) . symbol_rate as
-                * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_qpsk_parameters ) ,
-                "::" , stringify ! ( symbol_rate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_qpsk_parameters ) ) . fec_inner as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_qpsk_parameters ) ,
-                "::" , stringify ! ( fec_inner ) ));
-}
 impl Clone for dvb_qpsk_parameters {
     fn clone(&self) -> Self { *self }
 }
@@ -995,28 +671,6 @@ pub struct dvb_qam_parameters {
     pub fec_inner: fe_code_rate_t,
     pub modulation: fe_modulation_t,
 }
-#[test]
-fn bindgen_test_layout_dvb_qam_parameters() {
-    assert_eq!(::std::mem::size_of::<dvb_qam_parameters>() , 12usize , concat
-               ! ( "Size of: " , stringify ! ( dvb_qam_parameters ) ));
-    assert_eq! (::std::mem::align_of::<dvb_qam_parameters>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( dvb_qam_parameters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_qam_parameters ) ) . symbol_rate as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_qam_parameters ) ,
-                "::" , stringify ! ( symbol_rate ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_qam_parameters ) ) . fec_inner as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_qam_parameters ) ,
-                "::" , stringify ! ( fec_inner ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_qam_parameters ) ) . modulation as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_qam_parameters ) ,
-                "::" , stringify ! ( modulation ) ));
-}
 impl Clone for dvb_qam_parameters {
     fn clone(&self) -> Self { *self }
 }
@@ -1027,18 +681,6 @@ impl Default for dvb_qam_parameters {
 #[derive(Debug, Copy)]
 pub struct dvb_vsb_parameters {
     pub modulation: fe_modulation_t,
-}
-#[test]
-fn bindgen_test_layout_dvb_vsb_parameters() {
-    assert_eq!(::std::mem::size_of::<dvb_vsb_parameters>() , 4usize , concat !
-               ( "Size of: " , stringify ! ( dvb_vsb_parameters ) ));
-    assert_eq! (::std::mem::align_of::<dvb_vsb_parameters>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( dvb_vsb_parameters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_vsb_parameters ) ) . modulation as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_vsb_parameters ) ,
-                "::" , stringify ! ( modulation ) ));
 }
 impl Clone for dvb_vsb_parameters {
     fn clone(&self) -> Self { *self }
@@ -1056,51 +698,6 @@ pub struct dvb_ofdm_parameters {
     pub transmission_mode: fe_transmit_mode_t,
     pub guard_interval: fe_guard_interval_t,
     pub hierarchy_information: fe_hierarchy_t,
-}
-#[test]
-fn bindgen_test_layout_dvb_ofdm_parameters() {
-    assert_eq!(::std::mem::size_of::<dvb_ofdm_parameters>() , 28usize , concat
-               ! ( "Size of: " , stringify ! ( dvb_ofdm_parameters ) ));
-    assert_eq! (::std::mem::align_of::<dvb_ofdm_parameters>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dvb_ofdm_parameters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) . bandwidth as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( bandwidth ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) . code_rate_HP as
-                * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( code_rate_HP ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) . code_rate_LP as
-                * const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( code_rate_LP ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) . constellation
-                as * const _ as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( constellation ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) .
-                transmission_mode as * const _ as usize } , 16usize , concat !
-                (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( transmission_mode ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) . guard_interval
-                as * const _ as usize } , 20usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( guard_interval ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_ofdm_parameters ) ) .
-                hierarchy_information as * const _ as usize } , 24usize ,
-                concat ! (
-                "Alignment of field: " , stringify ! ( dvb_ofdm_parameters ) ,
-                "::" , stringify ! ( hierarchy_information ) ));
 }
 impl Clone for dvb_ofdm_parameters {
     fn clone(&self) -> Self { *self }
@@ -1124,70 +721,11 @@ pub union dvb_frontend_parameters__bindgen_ty_1 {
     pub vsb: dvb_vsb_parameters,
     _bindgen_union_align: [u32; 7usize],
 }
-#[test]
-fn bindgen_test_layout_dvb_frontend_parameters__bindgen_ty_1() {
-    assert_eq!(::std::mem::size_of::<dvb_frontend_parameters__bindgen_ty_1>()
-               , 28usize , concat ! (
-               "Size of: " , stringify ! (
-               dvb_frontend_parameters__bindgen_ty_1 ) ));
-    assert_eq! (::std::mem::align_of::<dvb_frontend_parameters__bindgen_ty_1>()
-                , 4usize , concat ! (
-                "Alignment of " , stringify ! (
-                dvb_frontend_parameters__bindgen_ty_1 ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters__bindgen_ty_1 ) )
-                . qpsk as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dvb_frontend_parameters__bindgen_ty_1 ) , "::" , stringify ! (
-                qpsk ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters__bindgen_ty_1 ) )
-                . qam as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dvb_frontend_parameters__bindgen_ty_1 ) , "::" , stringify ! (
-                qam ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters__bindgen_ty_1 ) )
-                . ofdm as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dvb_frontend_parameters__bindgen_ty_1 ) , "::" , stringify ! (
-                ofdm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters__bindgen_ty_1 ) )
-                . vsb as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! (
-                dvb_frontend_parameters__bindgen_ty_1 ) , "::" , stringify ! (
-                vsb ) ));
-}
 impl Clone for dvb_frontend_parameters__bindgen_ty_1 {
     fn clone(&self) -> Self { *self }
 }
 impl Default for dvb_frontend_parameters__bindgen_ty_1 {
     fn default() -> Self { unsafe { ::std::mem::zeroed() } }
-}
-#[test]
-fn bindgen_test_layout_dvb_frontend_parameters() {
-    assert_eq!(::std::mem::size_of::<dvb_frontend_parameters>() , 36usize ,
-               concat ! (
-               "Size of: " , stringify ! ( dvb_frontend_parameters ) ));
-    assert_eq! (::std::mem::align_of::<dvb_frontend_parameters>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dvb_frontend_parameters ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters ) ) . frequency
-                as * const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_parameters
-                ) , "::" , stringify ! ( frequency ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters ) ) . inversion
-                as * const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_parameters
-                ) , "::" , stringify ! ( inversion ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_parameters ) ) . u as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_parameters
-                ) , "::" , stringify ! ( u ) ));
 }
 impl Clone for dvb_frontend_parameters {
     fn clone(&self) -> Self { *self }
@@ -1200,23 +738,6 @@ impl Default for dvb_frontend_parameters {
 pub struct dvb_frontend_event {
     pub status: fe_status_t,
     pub parameters: dvb_frontend_parameters,
-}
-#[test]
-fn bindgen_test_layout_dvb_frontend_event() {
-    assert_eq!(::std::mem::size_of::<dvb_frontend_event>() , 40usize , concat
-               ! ( "Size of: " , stringify ! ( dvb_frontend_event ) ));
-    assert_eq! (::std::mem::align_of::<dvb_frontend_event>() , 4usize , concat
-                ! ( "Alignment of " , stringify ! ( dvb_frontend_event ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_event ) ) . status as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_event ) ,
-                "::" , stringify ! ( status ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dvb_frontend_event ) ) . parameters as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dvb_frontend_event ) ,
-                "::" , stringify ! ( parameters ) ));
 }
 impl Clone for dvb_frontend_event {
     fn clone(&self) -> Self { *self }

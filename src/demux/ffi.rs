@@ -75,18 +75,6 @@ pub type __u64 = ::std::os::raw::c_ulonglong;
 pub struct __kernel_fd_set {
     pub fds_bits: [::std::os::raw::c_ulong; 16usize],
 }
-#[test]
-fn bindgen_test_layout___kernel_fd_set() {
-    assert_eq!(::std::mem::size_of::<__kernel_fd_set>() , 128usize , concat !
-               ( "Size of: " , stringify ! ( __kernel_fd_set ) ));
-    assert_eq! (::std::mem::align_of::<__kernel_fd_set>() , 8usize , concat !
-                ( "Alignment of " , stringify ! ( __kernel_fd_set ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __kernel_fd_set ) ) . fds_bits as * const
-                _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __kernel_fd_set ) ,
-                "::" , stringify ! ( fds_bits ) ));
-}
 impl Clone for __kernel_fd_set {
     fn clone(&self) -> Self { *self }
 }
@@ -116,18 +104,6 @@ pub type __kernel_ptrdiff_t = __kernel_long_t;
 #[derive(Debug, Default, Copy)]
 pub struct __kernel_fsid_t {
     pub val: [::std::os::raw::c_int; 2usize],
-}
-#[test]
-fn bindgen_test_layout___kernel_fsid_t() {
-    assert_eq!(::std::mem::size_of::<__kernel_fsid_t>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( __kernel_fsid_t ) ));
-    assert_eq! (::std::mem::align_of::<__kernel_fsid_t>() , 4usize , concat !
-                ( "Alignment of " , stringify ! ( __kernel_fsid_t ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __kernel_fsid_t ) ) . val as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __kernel_fsid_t ) ,
-                "::" , stringify ! ( val ) ));
 }
 impl Clone for __kernel_fsid_t {
     fn clone(&self) -> Self { *self }
@@ -178,18 +154,6 @@ pub type __pid_t = ::std::os::raw::c_int;
 pub struct __fsid_t {
     pub __val: [::std::os::raw::c_int; 2usize],
 }
-#[test]
-fn bindgen_test_layout___fsid_t() {
-    assert_eq!(::std::mem::size_of::<__fsid_t>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( __fsid_t ) ));
-    assert_eq! (::std::mem::align_of::<__fsid_t>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( __fsid_t ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __fsid_t ) ) . __val as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __fsid_t ) , "::" ,
-                stringify ! ( __val ) ));
-}
 impl Clone for __fsid_t {
     fn clone(&self) -> Self { *self }
 }
@@ -230,23 +194,6 @@ pub struct timespec {
     pub tv_sec: __time_t,
     pub tv_nsec: __syscall_slong_t,
 }
-#[test]
-fn bindgen_test_layout_timespec() {
-    assert_eq!(::std::mem::size_of::<timespec>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( timespec ) ));
-    assert_eq! (::std::mem::align_of::<timespec>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( timespec ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const timespec ) ) . tv_sec as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( timespec ) , "::" ,
-                stringify ! ( tv_sec ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const timespec ) ) . tv_nsec as * const _ as
-                usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( timespec ) , "::" ,
-                stringify ! ( tv_nsec ) ));
-}
 impl Clone for timespec {
     fn clone(&self) -> Self { *self }
 }
@@ -265,68 +212,6 @@ pub struct tm {
     pub tm_gmtoff: ::std::os::raw::c_long,
     pub tm_zone: *const ::std::os::raw::c_char,
 }
-#[test]
-fn bindgen_test_layout_tm() {
-    assert_eq!(::std::mem::size_of::<tm>() , 56usize , concat ! (
-               "Size of: " , stringify ! ( tm ) ));
-    assert_eq! (::std::mem::align_of::<tm>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( tm ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_sec as * const _ as usize } ,
-                0usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_sec ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_min as * const _ as usize } ,
-                4usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_min ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_hour as * const _ as usize }
-                , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_hour ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_mday as * const _ as usize }
-                , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_mday ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_mon as * const _ as usize } ,
-                16usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_mon ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_year as * const _ as usize }
-                , 20usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_year ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_wday as * const _ as usize }
-                , 24usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_wday ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_yday as * const _ as usize }
-                , 28usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_yday ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_isdst as * const _ as usize }
-                , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_isdst ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_gmtoff as * const _ as usize
-                } , 40usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_gmtoff ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const tm ) ) . tm_zone as * const _ as usize }
-                , 48usize , concat ! (
-                "Alignment of field: " , stringify ! ( tm ) , "::" , stringify
-                ! ( tm_zone ) ));
-}
 impl Clone for tm {
     fn clone(&self) -> Self { *self }
 }
@@ -338,23 +223,6 @@ impl Default for tm {
 pub struct itimerspec {
     pub it_interval: timespec,
     pub it_value: timespec,
-}
-#[test]
-fn bindgen_test_layout_itimerspec() {
-    assert_eq!(::std::mem::size_of::<itimerspec>() , 32usize , concat ! (
-               "Size of: " , stringify ! ( itimerspec ) ));
-    assert_eq! (::std::mem::align_of::<itimerspec>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( itimerspec ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const itimerspec ) ) . it_interval as * const _
-                as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( itimerspec ) , "::" ,
-                stringify ! ( it_interval ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const itimerspec ) ) . it_value as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( itimerspec ) , "::" ,
-                stringify ! ( it_value ) ));
 }
 impl Clone for itimerspec {
     fn clone(&self) -> Self { *self }
@@ -390,38 +258,6 @@ pub struct __locale_struct {
     pub __ctype_tolower: *const ::std::os::raw::c_int,
     pub __ctype_toupper: *const ::std::os::raw::c_int,
     pub __names: [*const ::std::os::raw::c_char; 13usize],
-}
-#[test]
-fn bindgen_test_layout___locale_struct() {
-    assert_eq!(::std::mem::size_of::<__locale_struct>() , 232usize , concat !
-               ( "Size of: " , stringify ! ( __locale_struct ) ));
-    assert_eq! (::std::mem::align_of::<__locale_struct>() , 8usize , concat !
-                ( "Alignment of " , stringify ! ( __locale_struct ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __locale_struct ) ) . __locales as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( __locale_struct ) ,
-                "::" , stringify ! ( __locales ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __locale_struct ) ) . __ctype_b as *
-                const _ as usize } , 104usize , concat ! (
-                "Alignment of field: " , stringify ! ( __locale_struct ) ,
-                "::" , stringify ! ( __ctype_b ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __locale_struct ) ) . __ctype_tolower as
-                * const _ as usize } , 112usize , concat ! (
-                "Alignment of field: " , stringify ! ( __locale_struct ) ,
-                "::" , stringify ! ( __ctype_tolower ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __locale_struct ) ) . __ctype_toupper as
-                * const _ as usize } , 120usize , concat ! (
-                "Alignment of field: " , stringify ! ( __locale_struct ) ,
-                "::" , stringify ! ( __ctype_toupper ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const __locale_struct ) ) . __names as * const
-                _ as usize } , 128usize , concat ! (
-                "Alignment of field: " , stringify ! ( __locale_struct ) ,
-                "::" , stringify ! ( __names ) ));
 }
 impl Clone for __locale_struct {
     fn clone(&self) -> Self { *self }
@@ -590,28 +426,6 @@ pub struct dmx_filter {
     pub mask: [__u8; 16usize],
     pub mode: [__u8; 16usize],
 }
-#[test]
-fn bindgen_test_layout_dmx_filter() {
-    assert_eq!(::std::mem::size_of::<dmx_filter>() , 48usize , concat ! (
-               "Size of: " , stringify ! ( dmx_filter ) ));
-    assert_eq! (::std::mem::align_of::<dmx_filter>() , 1usize , concat ! (
-                "Alignment of " , stringify ! ( dmx_filter ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_filter ) ) . filter as * const _ as
-                usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_filter ) , "::" ,
-                stringify ! ( filter ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_filter ) ) . mask as * const _ as
-                usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_filter ) , "::" ,
-                stringify ! ( mask ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_filter ) ) . mode as * const _ as
-                usize } , 32usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_filter ) , "::" ,
-                stringify ! ( mode ) ));
-}
 impl Clone for dmx_filter {
     fn clone(&self) -> Self { *self }
 }
@@ -623,35 +437,6 @@ pub struct dmx_sct_filter_params {
     pub filter: dmx_filter_t,
     pub timeout: __u32,
     pub flags: __u32,
-}
-#[test]
-fn bindgen_test_layout_dmx_sct_filter_params() {
-    assert_eq!(::std::mem::size_of::<dmx_sct_filter_params>() , 60usize ,
-               concat ! ( "Size of: " , stringify ! ( dmx_sct_filter_params )
-               ));
-    assert_eq! (::std::mem::align_of::<dmx_sct_filter_params>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dmx_sct_filter_params ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_sct_filter_params ) ) . pid as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_sct_filter_params )
-                , "::" , stringify ! ( pid ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_sct_filter_params ) ) . filter as *
-                const _ as usize } , 2usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_sct_filter_params )
-                , "::" , stringify ! ( filter ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_sct_filter_params ) ) . timeout as *
-                const _ as usize } , 52usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_sct_filter_params )
-                , "::" , stringify ! ( timeout ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_sct_filter_params ) ) . flags as *
-                const _ as usize } , 56usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_sct_filter_params )
-                , "::" , stringify ! ( flags ) ));
 }
 impl Clone for dmx_sct_filter_params {
     fn clone(&self) -> Self { *self }
@@ -665,40 +450,6 @@ pub struct dmx_pes_filter_params {
     pub pes_type: dmx_pes_type_t,
     pub flags: __u32,
 }
-#[test]
-fn bindgen_test_layout_dmx_pes_filter_params() {
-    assert_eq!(::std::mem::size_of::<dmx_pes_filter_params>() , 20usize ,
-               concat ! ( "Size of: " , stringify ! ( dmx_pes_filter_params )
-               ));
-    assert_eq! (::std::mem::align_of::<dmx_pes_filter_params>() , 4usize ,
-                concat ! (
-                "Alignment of " , stringify ! ( dmx_pes_filter_params ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_pes_filter_params ) ) . pid as *
-                const _ as usize } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_pes_filter_params )
-                , "::" , stringify ! ( pid ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_pes_filter_params ) ) . input as *
-                const _ as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_pes_filter_params )
-                , "::" , stringify ! ( input ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_pes_filter_params ) ) . output as *
-                const _ as usize } , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_pes_filter_params )
-                , "::" , stringify ! ( output ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_pes_filter_params ) ) . pes_type as *
-                const _ as usize } , 12usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_pes_filter_params )
-                , "::" , stringify ! ( pes_type ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_pes_filter_params ) ) . flags as *
-                const _ as usize } , 16usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_pes_filter_params )
-                , "::" , stringify ! ( flags ) ));
-}
 impl Clone for dmx_pes_filter_params {
     fn clone(&self) -> Self { *self }
 }
@@ -710,23 +461,6 @@ impl Default for dmx_pes_filter_params {
 pub struct dmx_caps {
     pub caps: __u32,
     pub num_decoders: ::std::os::raw::c_int,
-}
-#[test]
-fn bindgen_test_layout_dmx_caps() {
-    assert_eq!(::std::mem::size_of::<dmx_caps>() , 8usize , concat ! (
-               "Size of: " , stringify ! ( dmx_caps ) ));
-    assert_eq! (::std::mem::align_of::<dmx_caps>() , 4usize , concat ! (
-                "Alignment of " , stringify ! ( dmx_caps ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_caps ) ) . caps as * const _ as usize
-                } , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_caps ) , "::" ,
-                stringify ! ( caps ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_caps ) ) . num_decoders as * const _
-                as usize } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_caps ) , "::" ,
-                stringify ! ( num_decoders ) ));
 }
 impl Clone for dmx_caps {
     fn clone(&self) -> Self { *self }
@@ -748,28 +482,6 @@ pub struct dmx_stc {
     pub num: ::std::os::raw::c_uint,
     pub base: ::std::os::raw::c_uint,
     pub stc: __u64,
-}
-#[test]
-fn bindgen_test_layout_dmx_stc() {
-    assert_eq!(::std::mem::size_of::<dmx_stc>() , 16usize , concat ! (
-               "Size of: " , stringify ! ( dmx_stc ) ));
-    assert_eq! (::std::mem::align_of::<dmx_stc>() , 8usize , concat ! (
-                "Alignment of " , stringify ! ( dmx_stc ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_stc ) ) . num as * const _ as usize }
-                , 0usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_stc ) , "::" ,
-                stringify ! ( num ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_stc ) ) . base as * const _ as usize
-                } , 4usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_stc ) , "::" ,
-                stringify ! ( base ) ));
-    assert_eq! (unsafe {
-                & ( * ( 0 as * const dmx_stc ) ) . stc as * const _ as usize }
-                , 8usize , concat ! (
-                "Alignment of field: " , stringify ! ( dmx_stc ) , "::" ,
-                stringify ! ( stc ) ));
 }
 impl Clone for dmx_stc {
     fn clone(&self) -> Self { *self }
